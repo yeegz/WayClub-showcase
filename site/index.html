@@ -514,6 +514,12 @@
              | action | target | detail | utc_time )</div>
         </div>
       </div>
+      <div class="card reveal" style="margin-top:24px">
+        <h3>What an adversarial review found</h3>
+        <p>These claims were put through a three-lens adversarial review briefed to refute them, not confirm them. It proved eighteen defects with reproducible output.</p>
+        <p><strong>What held:</strong> cross-tenant reads and writes across all twenty-five tenant-scoped tables leaked nothing in either direction, sessions without claims read nothing at all, every cross-tenant object returned 404 rather than 403, forged and unsigned tokens were rejected, and double approvals were blocked structurally by a database constraint.</p>
+        <p><strong>What did not:</strong> the workflow engine, not the tenancy layer, held the worst defect. Approval routing was never re-evaluated after a revision, so an event approved as low-risk could be edited into an off-campus, high-risk, over-budget event and keep its original two-stage route. The same content submitted fresh produced five approval stages; smuggled through a revision it produced two. That is fixed and covered by a regression test verified to fail without the fix. Other findings, including audit-chain ordering under concurrent writes, remain open and are tracked with severity and location rather than quietly deferred.</p>
+      </div>
     </div>
   </section>
 

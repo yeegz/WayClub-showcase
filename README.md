@@ -127,11 +127,21 @@ Condensed threat model (STRIDE):
 | Spoofing | Account takeover | High | scrypt password hashing, httpOnly SameSite cookies, short-lived JWTs |
 | Tampering | Approval or audit-log edit | High | Append-only hash-chained audit, RLS, single-transaction transitions |
 | Repudiation | "I didn't approve that" | Medium | Audit events carrying actor, timestamp and workflow definition version |
-| Information disclosure | Cross-tenant leak | **Critical** | Forced RLS, per-table isolation tests, 404-for-cross-tenant |
+| Information disclosure | Cross-tenant leak | **Critical** | Deny-by-default RLS, per-table isolation tests, 404-for-cross-tenant |
 | Elevation of privilege | President self-grants reviewer rights | High | Separation of duties, fixed role sets, scoped time-boxed grants, audited changes |
 | QR fraud | Screenshot or proxy check-in | Medium | Rotating single-use HMAC tokens, 60 to 90 second expiry (design pinned for the mobile phase) |
 
 Full detail: [docs/01-multi-tenant-rls.md](docs/01-multi-tenant-rls.md) and [docs/03-audit-integrity.md](docs/03-audit-integrity.md).
+
+### What an adversarial review found
+
+Design claims are worth little until someone tries to break them, so the build was put through a three-lens adversarial review (tenancy and RLS, API and workflow, web and accessibility) whose brief was to refute the claims above rather than confirm them. It proved 18 defects with reproducible output. That result is reported here because a security section that only lists intentions is the least trustworthy kind.
+
+**What held.** Cross-tenant SELECT, UPDATE, DELETE and INSERT sweeps across all 25 tenant-scoped tables leaked nothing, in both directions, including from the lowest-privilege student role. Sessions carrying no claims read zero rows everywhere, confirming deny-by-default. Over HTTP, every cross-tenant object returned 404 rather than 403, so the no-enumeration discipline is real. JWT `alg:none` and wrong-secret tokens were rejected. Four sign-up domain-bypass attempts failed. Decision replay and conflict semantics matched the specification exactly, and double approvals are blocked structurally by a unique constraint rather than by application logic. Attendance codes proved unbiased.
+
+**What did not.** The worst finding was in the workflow engine, not the tenancy layer: approval routing was never re-evaluated after a revision cycle, so an organiser could take an event approved on the low-risk route, edit it during revision into an off-campus, high-risk, over-threshold event, resubmit, and keep the original two-stage route. Safety, facilities and finance never saw it. The reviewer's control case made it unarguable: the same content submitted fresh produced five approval stages, and smuggled through a revision produced two. That is fixed, along with risk-level routing, a budget threshold that failed open when an institution had not configured it, and two dead ends that made the core flow unusable from the interface.
+
+Several findings remain open at the time of writing, including audit-chain ordering under concurrent writes and session revocation. They are tracked with severity, location and status in the build repository's status document rather than quietly deferred. The honest summary is that the tenancy boundary survived sustained attack and the workflow layer did not, which is roughly the opposite of what the design documents predicted.
 
 ## Design and accessibility
 
