@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="132" viewBox="0 0 720 132" role="img" aria-label="One event record flowing through five phases: proposal, approval, registration, attendance, verified record">
+  <title>One connected event record</title>
+  <desc>A proposal becomes an approval, a registration list, an attendance record and a verified involvement record, all attached to the same event object.</desc>
+  <rect x="0.5" y="0.5" width="719" height="131" rx="12" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+    <!-- connectors -->
+    <g stroke="#9AA2B1" stroke-width="1.5" fill="#9AA2B1">
+      <line x1="137" y1="58" x2="152" y2="58"/><path d="M152 54 L159 58 L152 62 Z" stroke="none"/>
+      <line x1="267" y1="58" x2="282" y2="58"/><path d="M282 54 L289 58 L282 62 Z" stroke="none"/>
+      <line x1="417" y1="58" x2="432" y2="58"/><path d="M432 54 L439 58 L432 62 Z" stroke="none"/>
+      <line x1="565" y1="58" x2="580" y2="58"/><path d="M580 54 L587 58 L580 62 Z" stroke="none"/>
+    </g>
+    <!-- chips -->
+    <g font-size="14" font-weight="600" text-anchor="middle">
+      <rect x="31" y="40" width="104" height="36" rx="18" fill="#EFF1F5" stroke="#CDD2DC"/>
+      <text x="83" y="63" fill="#3F4756">Proposal</text>
+      <rect x="161" y="40" width="104" height="36" rx="18" fill="#EDF9F0" stroke="#ADE1C0"/>
+      <text x="213" y="63" fill="#196336">Approval</text>
+      <rect x="291" y="40" width="124" height="36" rx="18" fill="#EDF6FC" stroke="#B0D6F0"/>
+      <text x="353" y="63" fill="#13537C">Registration</text>
+      <rect x="441" y="40" width="122" height="36" rx="18" fill="#EBF8F5" stroke="#A4DFD2"/>
+      <text x="502" y="63" fill="#106051">Attendance</text>
+      <rect x="589" y="40" width="100" height="36" rx="18" fill="#E2E5EC" stroke="#9AA2B1"/>
+      <text x="639" y="63" fill="#2B3240">Record</text>
+    </g>
+    <!-- captions -->
+    <g font-size="11" fill="#4C5464" text-anchor="middle">
+      <text x="83" y="98">entered once</text>
+      <text x="213" y="98">conditional stages</text>
+      <text x="353" y="98">capacity + waitlist</text>
+      <text x="502" y="98">idempotent check-in</text>
+      <text x="639" y="98">verified, private</text>
+    </g>
+    <text x="360" y="120" font-size="11" fill="#767F90" text-anchor="middle">one durable event object, nothing re-keyed between modules</text>
+  </g>
+</svg>

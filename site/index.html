@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WayClub · engineering showcase</title>
+<meta name="description" content="WayClub is the approval and event-operations layer that lets student clubs plan, get approved, and run events in one place, while allowing universities to govern the process with confidence. An engineering showcase, pre-pilot.">
+<meta property="og:title" content="WayClub · engineering showcase">
+<meta property="og:description" content="One connected event record, deny-by-default row-level security, a versioned approval workflow engine and a hash-chained audit log. Pre-pilot, honestly labelled.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yeegz.github.io/WayClub-showcase/">
+<meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10141C" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%232E52C4'/%3E%3Ctext%20x='16'%20y='22'%20font-family='sans-serif'%20font-size='16'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+<style>
+  /* ------------------------------------------------------------------
+     WayClub design tokens (values from packages/design-tokens dist).
+     Light is the default; dark follows the OS preference.
+     ------------------------------------------------------------------ */
+  :root {
+    color-scheme: light;
+    --wc-color-bg-canvas: #F7F8FA;
+    --wc-color-bg-surface: #FFFFFF;
+    --wc-color-bg-raised: #FFFFFF;
+    --wc-color-bg-sunken: #EFF1F5;
+    --wc-color-bg-warm: #FEF6EE;
+    --wc-color-text-primary: #1A1F29;
+    --wc-color-text-secondary: #3F4756;
+    --wc-color-text-muted: #4C5464;
+    --wc-color-border-subtle: #E2E5EC;
+    --wc-color-border-default: #CDD2DC;
+    --wc-brand-primary: #2E52C4;
+    --wc-brand-on-primary: #FFFFFF;
+    --wc-brand-primary-hover: #27439F;
+    --wc-brand-primary-pressed: #21377F;
+    --wc-color-action-primary-text: #2E52C4;
+    --wc-color-action-primary-subtle-bg: #EEF3FE;
+    --wc-color-action-primary-subtle-text: #27439F;
+    --wc-color-accent-text: #934413;
+    --wc-color-focus-ring: #2E52C4;
+    --wc-color-state-draft-bg: #EFF1F5;            --wc-color-state-draft-fg: #3F4756;            --wc-color-state-draft-border: #CDD2DC;
+    --wc-color-state-submitted-bg: #EDF6FC;        --wc-color-state-submitted-fg: #13537C;        --wc-color-state-submitted-border: #B0D6F0;
+    --wc-color-state-under-review-bg: #F3F0FC;     --wc-color-state-under-review-fg: #4A3889;     --wc-color-state-under-review-border: #CCC2F1;
+    --wc-color-state-revision-requested-bg: #FDF6E7; --wc-color-state-revision-requested-fg: #7C4A05; --wc-color-state-revision-requested-border: #F4D394;
+    --wc-color-state-approved-bg: #EDF9F0;         --wc-color-state-approved-fg: #196336;         --wc-color-state-approved-border: #ADE1C0;
+    --wc-color-state-rejected-bg: #FCF0EF;         --wc-color-state-rejected-fg: #8F2721;         --wc-color-state-rejected-border: #F2BAB4;
+    --wc-color-state-live-bg: #EBF8F5;             --wc-color-state-live-fg: #106051;             --wc-color-state-live-border: #A4DFD2;
+    --wc-color-state-completed-bg: #E2E5EC;        --wc-color-state-completed-fg: #2B3240;        --wc-color-state-completed-border: #9AA2B1;
+    --wc-color-state-cancelled-bg: #EFF1F5;        --wc-color-state-cancelled-fg: #4C5464;        --wc-color-state-cancelled-border: #CDD2DC;
+    --wc-color-state-expired-bg: #FDF6E7;          --wc-color-state-expired-fg: #613A06;          --wc-color-state-expired-border: #F4D394;
+    --wc-shadow-1: 0px 1px 2px 0px rgba(16, 20, 28, 0.06), 0px 1px 3px 0px rgba(16, 20, 28, 0.08);
+    --wc-shadow-2: 0px 2px 4px 0px rgba(16, 20, 28, 0.05), 0px 4px 12px 0px rgba(16, 20, 28, 0.10);
+    --wc-radius-md: 8px;
+    --wc-radius-lg: 12px;
+    --wc-radius-xl: 16px;
+    --wc-radius-pill: 9999px;
+    --wc-duration-base: 200ms;
+    --wc-duration-slow: 280ms;
+    --wc-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --wc-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --wc-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --wc-color-bg-canvas: #10141C;
+      --wc-color-bg-surface: #1A1F29;
+      --wc-color-bg-raised: #232936;
+      --wc-color-bg-sunken: #0B0E14;
+      --wc-color-bg-warm: #241610;
+      --wc-color-text-primary: #F7F8FA;
+      --wc-color-text-secondary: #CDD2DC;
+      --wc-color-text-muted: #9AA2B1;
+      --wc-color-border-subtle: #2B3240;
+      --wc-color-border-default: #3F4756;
+      --wc-brand-primary: #6089E9;
+      --wc-brand-on-primary: #10141C;
+      --wc-brand-primary-hover: #8FADF3;
+      --wc-brand-primary-pressed: #B9CDFA;
+      --wc-color-action-primary-text: #8FADF3;
+      --wc-color-action-primary-subtle-bg: #1B2A4A;
+      --wc-color-action-primary-subtle-text: #B9CDFA;
+      --wc-color-accent-text: #F5B577;
+      --wc-color-focus-ring: #8FADF3;
+      --wc-color-state-draft-bg: #232936;            --wc-color-state-draft-fg: #CDD2DC;            --wc-color-state-draft-border: #4C5464;
+      --wc-color-state-submitted-bg: #0C344D;        --wc-color-state-submitted-fg: #B0D6F0;        --wc-color-state-submitted-border: #13537C;
+      --wc-color-state-under-review-bg: #2D2254;     --wc-color-state-under-review-fg: #CCC2F1;     --wc-color-state-under-review-border: #4A3889;
+      --wc-color-state-revision-requested-bg: #4C2E06; --wc-color-state-revision-requested-fg: #F4D394; --wc-color-state-revision-requested-border: #7C4A05;
+      --wc-color-state-approved-bg: #103D22;         --wc-color-state-approved-fg: #ADE1C0;         --wc-color-state-approved-border: #196336;
+      --wc-color-state-rejected-bg: #581915;         --wc-color-state-rejected-fg: #F2BAB4;         --wc-color-state-rejected-border: #8F2721;
+      --wc-color-state-live-bg: #0A3B32;             --wc-color-state-live-fg: #A4DFD2;             --wc-color-state-live-border: #106051;
+      --wc-color-state-completed-bg: #2B3240;        --wc-color-state-completed-fg: #E2E5EC;        --wc-color-state-completed-border: #626B7A;
+      --wc-color-state-cancelled-bg: #232936;        --wc-color-state-cancelled-fg: #9AA2B1;        --wc-color-state-cancelled-border: #4C5464;
+      --wc-color-state-expired-bg: #4C2E06;          --wc-color-state-expired-fg: #EBB55C;          --wc-color-state-expired-border: #7C4A05;
+      --wc-shadow-1: 0px 1px 2px 0px rgba(0, 0, 0, 0.55), 0px 1px 3px 0px rgba(0, 0, 0, 0.35);
+      --wc-shadow-2: 0px 2px 4px 0px rgba(0, 0, 0, 0.50), 0px 4px 12px 0px rgba(0, 0, 0, 0.40);
+    }
+  }
+
+  /* ---------- base ---------- */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--wc-font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--wc-color-text-primary);
+    background: var(--wc-color-bg-canvas);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--wc-color-focus-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  a { color: var(--wc-color-action-primary-text); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono { font-family: var(--wc-font-mono); font-size: 0.85em; }
+
+  .skip-link {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--wc-color-bg-surface); color: var(--wc-color-text-primary);
+    padding: 12px 20px; border-radius: var(--wc-radius-md); z-index: 100;
+    border: 1px solid var(--wc-color-border-default);
+  }
+  .skip-link:focus { left: 16px; top: 16px; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- header ---------- */
+  header.site {
+    border-bottom: 1px solid var(--wc-color-border-subtle);
+    background: color-mix(in srgb, var(--wc-color-bg-canvas) 88%, transparent);
+    backdrop-filter: blur(8px);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .site-inner { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .wordmark { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.05rem; color: var(--wc-color-text-primary); }
+  .wordmark:hover { text-decoration: none; }
+  .mark {
+    width: 26px; height: 26px; border-radius: 7px; flex: none;
+    background: var(--wc-brand-primary); color: var(--wc-brand-on-primary);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+  nav.primary { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+  nav.primary a {
+    color: var(--wc-color-text-secondary); font-size: 0.875rem; font-weight: 500;
+    padding: 8px 12px; border-radius: var(--wc-radius-md);
+  }
+  nav.primary a:hover { background: var(--wc-color-bg-sunken); text-decoration: none; color: var(--wc-color-text-primary); }
+  @media (max-width: 700px) { nav.primary a.hide-sm { display: none; } }
+
+  /* ---------- shared section styling ---------- */
+  section { padding: 72px 0; }
+  section + section { border-top: 1px solid var(--wc-color-border-subtle); }
+  .kicker {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--wc-color-action-primary-text); margin-bottom: 12px;
+  }
+  h1, h2, h3 { font-weight: 600; letter-spacing: -0.015em; }
+  h2 { font-size: 1.875rem; line-height: 2.375rem; margin-bottom: 16px; }
+  h3 { font-size: 1.25rem; line-height: 1.75rem; margin-bottom: 8px; }
+  .lede { font-size: 1.125rem; line-height: 1.75rem; color: var(--wc-color-text-secondary); max-width: 46em; }
+  p + p { margin-top: 12px; }
+
+  .card {
+    background: var(--wc-color-bg-surface);
+    border: 1px solid var(--wc-color-border-subtle);
+    border-radius: var(--wc-radius-lg);
+    padding: 24px;
+    box-shadow: var(--wc-shadow-1);
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 96px 0 80px; }
+  .honesty-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--wc-color-action-primary-subtle-text);
+    background: var(--wc-color-action-primary-subtle-bg);
+    border: 1px solid var(--wc-color-border-subtle);
+    border-radius: var(--wc-radius-pill);
+    padding: 6px 14px; margin-bottom: 24px;
+  }
+  .honesty-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--wc-brand-primary); flex: none; }
+  h1.display {
+    font-size: clamp(2.25rem, 5.5vw, 3.4rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    max-width: 17em;
+    margin-bottom: 20px;
+  }
+  h1.display .quiet { color: var(--wc-color-text-muted); }
+  .hero .lede { margin-bottom: 32px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 44px; padding: 0 22px; border-radius: var(--wc-radius-md);
+    font-size: 0.9375rem; font-weight: 600; border: 1px solid transparent;
+    cursor: pointer; transition: background var(--wc-duration-base) var(--wc-ease-standard);
+  }
+  .btn-primary { background: var(--wc-brand-primary); color: var(--wc-brand-on-primary); }
+  .btn-primary:hover { background: var(--wc-brand-primary-hover); text-decoration: none; }
+  .btn-primary:active { background: var(--wc-brand-primary-pressed); }
+  .btn-quiet { color: var(--wc-color-text-secondary); border-color: var(--wc-color-border-default); background: var(--wc-color-bg-surface); }
+  .btn-quiet:hover { background: var(--wc-color-bg-sunken); text-decoration: none; }
+  .hero-note { margin-top: 28px; font-size: 0.875rem; color: var(--wc-color-text-muted); max-width: 44em; }
+
+  /* ---------- stat strip ---------- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 48px; }
+  .stat { background: var(--wc-color-bg-surface); border: 1px solid var(--wc-color-border-subtle); border-radius: var(--wc-radius-lg); padding: 16px 18px; }
+  .stat b { display: block; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
+  .stat span { font-size: 0.8125rem; color: var(--wc-color-text-muted); }
+  .stats-caption { margin-top: 10px; font-size: 0.8125rem; color: var(--wc-color-text-muted); }
+
+  /* ---------- chips ---------- */
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 13px; border-radius: var(--wc-radius-pill);
+    font-size: 0.875rem; font-weight: 600; white-space: nowrap;
+    border: 1px solid;
+  }
+  .chip .glyph { font-size: 0.75rem; line-height: 1; }
+  .chip-draft { background: var(--wc-color-state-draft-bg); color: var(--wc-color-state-draft-fg); border-color: var(--wc-color-state-draft-border); }
+  .chip-submitted { background: var(--wc-color-state-submitted-bg); color: var(--wc-color-state-submitted-fg); border-color: var(--wc-color-state-submitted-border); }
+  .chip-under-review { background: var(--wc-color-state-under-review-bg); color: var(--wc-color-state-under-review-fg); border-color: var(--wc-color-state-under-review-border); }
+  .chip-revision { background: var(--wc-color-state-revision-requested-bg); color: var(--wc-color-state-revision-requested-fg); border-color: var(--wc-color-state-revision-requested-border); }
+  .chip-approved { background: var(--wc-color-state-approved-bg); color: var(--wc-color-state-approved-fg); border-color: var(--wc-color-state-approved-border); }
+  .chip-rejected { background: var(--wc-color-state-rejected-bg); color: var(--wc-color-state-rejected-fg); border-color: var(--wc-color-state-rejected-border); }
+  .chip-live { background: var(--wc-color-state-live-bg); color: var(--wc-color-state-live-fg); border-color: var(--wc-color-state-live-border); }
+  .chip-completed { background: var(--wc-color-state-completed-bg); color: var(--wc-color-state-completed-fg); border-color: var(--wc-color-state-completed-border); }
+  .chip-cancelled { background: var(--wc-color-state-cancelled-bg); color: var(--wc-color-state-cancelled-fg); border-color: var(--wc-color-state-cancelled-border); }
+  .chip-expired { background: var(--wc-color-state-expired-bg); color: var(--wc-color-state-expired-fg); border-color: var(--wc-color-state-expired-border); }
+
+  /* ---------- one record flow ---------- */
+  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; margin-top: 40px; }
+  .flow-step { flex: 1 1 180px; min-width: 180px; position: relative; padding: 20px 22px 20px 22px; }
+  .flow-step + .flow-step { border-left: 1px dashed var(--wc-color-border-default); }
+  .flow-step .chip { margin-bottom: 12px; }
+  .flow-step h3 { font-size: 1rem; margin-bottom: 6px; }
+  .flow-step p { font-size: 0.875rem; color: var(--wc-color-text-muted); }
+  .flow-card { background: var(--wc-color-bg-surface); border: 1px solid var(--wc-color-border-subtle); border-radius: var(--wc-radius-xl); box-shadow: var(--wc-shadow-1); overflow: hidden; }
+  .flow-footer { border-top: 1px solid var(--wc-color-border-subtle); padding: 14px 22px; font-size: 0.875rem; color: var(--wc-color-text-secondary); background: var(--wc-color-bg-sunken); }
+
+  /* ---------- workflow ---------- */
+  .rail { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 32px 0 10px; }
+  .rail .arrow { color: var(--wc-color-text-muted); font-size: 0.8rem; user-select: none; }
+  .rail-note { font-size: 0.8125rem; color: var(--wc-color-text-muted); margin-bottom: 32px; }
+  .routes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }
+  .route h3 { display: flex; align-items: baseline; gap: 8px; }
+  .route h3 code { font-size: 0.8rem; color: var(--wc-color-text-muted); font-weight: 400; }
+  .route ol { margin: 12px 0 10px 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .route li { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--wc-color-text-secondary); }
+  .route li .step {
+    flex: none; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--wc-color-action-primary-subtle-bg); color: var(--wc-color-action-primary-subtle-text);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600;
+  }
+  .route p.cond { font-size: 0.8125rem; color: var(--wc-color-text-muted); }
+  .wf-props { margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .wf-props .card h3 { font-size: 1rem; }
+  .wf-props .card p { font-size: 0.875rem; color: var(--wc-color-text-secondary); }
+
+  /* ---------- security ---------- */
+  .sec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 36px; }
+  .sec-grid .card p { font-size: 0.9rem; color: var(--wc-color-text-secondary); }
+  .codeblock {
+    background: var(--wc-color-bg-sunken);
+    border: 1px solid var(--wc-color-border-subtle);
+    border-radius: var(--wc-radius-md);
+    padding: 14px 16px; margin-top: 14px;
+    font-family: var(--wc-font-mono); font-size: 0.78rem; line-height: 1.6;
+    color: var(--wc-color-text-secondary);
+    overflow-x: auto; white-space: pre;
+  }
+  .codeblock .hl { color: var(--wc-color-action-primary-text); }
+
+  /* ---------- design system ---------- */
+  .palette { display: flex; flex-wrap: wrap; gap: 10px; margin: 32px 0 14px; }
+  .palette-note { font-size: 0.8125rem; color: var(--wc-color-text-muted); margin-bottom: 28px; }
+  .ds-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .ds-facts .card p { font-size: 0.875rem; color: var(--wc-color-text-secondary); }
+  .focus-demo {
+    display: inline-flex; margin-top: 12px;
+    outline: 2px solid var(--wc-color-focus-ring); outline-offset: 2px; border-radius: var(--wc-radius-md);
+  }
+
+  /* ---------- screens gallery ---------- */
+  .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 24px; margin-top: 36px; }
+  .shot {
+    border: 1px solid var(--wc-color-border-subtle);
+    border-radius: var(--wc-radius-lg);
+    background: var(--wc-color-bg-surface);
+    overflow: hidden;
+  }
+  .shot img {
+    display: block; width: 100%; height: auto;
+    border-bottom: 1px solid var(--wc-color-border-subtle);
+  }
+  /* Light shots by default; dark shots swap in for dark viewers. */
+  .shot img.dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .shot img.light { display: none; }
+    :root:not([data-theme="light"]) .shot img.dark { display: block; }
+  }
+  .shot figcaption { padding: 14px 18px 18px; }
+  .shot figcaption strong { display: block; font-size: 0.9375rem; margin-bottom: 4px; }
+  .shot figcaption span { font-size: 0.8125rem; color: var(--wc-color-text-muted); }
+  .screens-note { margin-top: 28px; font-size: 0.875rem; color: var(--wc-color-text-muted); max-width: 46em; }
+
+  /* ---------- stack strip ---------- */
+  .stack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .stack span {
+    font-size: 0.875rem; font-weight: 500; color: var(--wc-color-text-secondary);
+    background: var(--wc-color-bg-surface); border: 1px solid var(--wc-color-border-subtle);
+    border-radius: var(--wc-radius-pill); padding: 7px 16px;
+  }
+
+  /* ---------- footer ---------- */
+  footer.site {
+    border-top: 1px solid var(--wc-color-border-subtle);
+    padding: 40px 0 56px; font-size: 0.875rem; color: var(--wc-color-text-muted);
+  }
+  .foot-inner { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: baseline; justify-content: space-between; }
+  .foot-links { display: flex; gap: 20px; flex-wrap: wrap; }
+
+  /* ---------- reveal (IntersectionObserver + setTimeout; no rAF loops) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--wc-duration-slow) var(--wc-ease-standard), transform var(--wc-duration-slow) var(--wc-ease-standard); }
+    .reveal.in { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site">
+  <div class="wrap site-inner">
+    <a class="wordmark" href="#top" aria-label="WayClub, back to top"><span class="mark" aria-hidden="true">W</span>WayClub</a>
+    <nav class="primary" aria-label="Sections">
+      <a href="#record" class="hide-sm">One record</a>
+      <a href="#workflow" class="hide-sm">Workflow</a>
+      <a href="#security" class="hide-sm">Security</a>
+      <a href="#design" class="hide-sm">Design</a>
+      <a href="https://github.com/yeegz/WayClub-showcase">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============================== HERO ============================== -->
+  <section class="hero" id="top" aria-labelledby="hero-h">
+    <div class="wrap">
+      <p class="honesty-tag"><span class="dot"></span>Engineering showcase · pre-pilot</p>
+      <h1 class="display" id="hero-h">Student clubs plan, get approved and run events in one place. <span class="quiet">Universities govern it with confidence.</span></h1>
+      <p class="lede">WayClub is the approval and event-operations layer for student organisations: one durable event record carrying a proposal through conditional multi-stage approval, registration, attendance and a verified involvement record, on a deny-by-default multi-tenant Postgres core.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/yeegz/WayClub-showcase#deep-dives">Read the engineering deep dives</a>
+        <a class="btn btn-quiet" href="#security">The security story</a>
+      </div>
+      <p class="hero-note">This page is an honest write-up of a system in build. No pilot has run, so no usage, adoption or performance claims appear anywhere on it. The demo tenant is named "Sunway Pilot (unofficial demo)" and implies no institutional affiliation or endorsement.</p>
+
+      <div class="stats" role="list" aria-label="Verified build numbers">
+        <div class="stat reveal" role="listitem"><b>58</b><span>domain tables, 8 migrations</span></div>
+        <div class="stat reveal" role="listitem"><b>29</b><span>tests in the DB foundation suite</span></div>
+        <div class="stat reveal" role="listitem"><b>108</b><span>WCAG contrast checks per build</span></div>
+        <div class="stat reveal" role="listitem"><b>15</b><span>event lifecycle states</span></div>
+        <div class="stat reveal" role="listitem"><b>3</b><span>seeded approval routes</span></div>
+        <div class="stat reveal" role="listitem"><b>2</b><span>tenants seeded to prove isolation</span></div>
+      </div>
+      <p class="stats-caption">Numbers are reproducible from the private build repository's migrations and test suites.</p>
+    </div>
+  </section>
+
+  <!-- ============================== ONE RECORD ============================== -->
+  <section id="record" aria-labelledby="record-h">
+    <div class="wrap">
+      <p class="kicker reveal">The wedge</p>
+      <h2 id="record-h" class="reveal">One connected event record</h2>
+      <p class="lede reveal">Club events usually live in five tools that do not talk to each other: a form, a chat thread, a spreadsheet, an inbox and someone's memory. WayClub's core decision is that the event is one durable object, and everything attaches to it. Information entered once carries forward; nothing is re-keyed.</p>
+
+      <div class="flow-card reveal">
+        <div class="flow">
+          <div class="flow-step">
+            <span class="chip chip-draft"><span class="glyph" aria-hidden="true">✎</span>Proposal</span>
+            <h3>Entered once</h3>
+            <p>A committee drafts the event: venue, dates, risk questionnaire, budget estimate. Autosaved, keyboard-complete.</p>
+          </div>
+          <div class="flow-step">
+            <span class="chip chip-under-review"><span class="glyph" aria-hidden="true">◐</span>Approval</span>
+            <h3>Routed by conditions</h3>
+            <p>Advisor, Student LIFE, then safety, facilities or finance stages as the event's facts require. Every decision audited.</p>
+          </div>
+          <div class="flow-step">
+            <span class="chip chip-submitted"><span class="glyph" aria-hidden="true">▤</span>Registration</span>
+            <h3>Capacity and waitlist</h3>
+            <p>Students register against the same record. A full event waitlists; a cancellation promotes the head of the queue.</p>
+          </div>
+          <div class="flow-step">
+            <span class="chip chip-live"><span class="glyph" aria-hidden="true">●</span>Attendance</span>
+            <h3>Idempotent check-in</h3>
+            <p>Accessible code-entry check-in on the web pilot; the same registration can never be counted twice.</p>
+          </div>
+          <div class="flow-step">
+            <span class="chip chip-completed"><span class="glyph" aria-hidden="true">✓</span>Record</span>
+            <h3>Verified involvement</h3>
+            <p>Attendance and committee roles become a student's verified record: private by default, never ranked.</p>
+          </div>
+        </div>
+        <div class="flow-footer">One event object in the database. The proposal, every approval decision, each registration, each check-in and the final record all reference it. Nothing is copied between modules.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== WORKFLOW ============================== -->
+  <section id="workflow" aria-labelledby="workflow-h">
+    <div class="wrap">
+      <p class="kicker reveal">The engine</p>
+      <h2 id="workflow-h" class="reveal">A versioned state machine, in rows and transactions</h2>
+      <p class="lede reveal">The approval engine is a configuration-driven in-application state machine. No external workflow service: human approvals measured in days need explicit states, version pinning, idempotent transitions and an audit trail, and all of those live naturally in Postgres.</p>
+
+      <div class="rail reveal" aria-label="Main event lifecycle">
+        <span class="chip chip-draft"><span class="glyph" aria-hidden="true">✎</span>draft</span>
+        <span class="arrow" aria-hidden="true">→</span>
+        <span class="chip chip-submitted"><span class="glyph" aria-hidden="true">▲</span>submitted</span>
+        <span class="arrow" aria-hidden="true">→</span>
+        <span class="chip chip-under-review"><span class="glyph" aria-hidden="true">◐</span>under review</span>
+        <span class="arrow" aria-hidden="true">→</span>
+        <span class="chip chip-approved"><span class="glyph" aria-hidden="true">✓</span>approved</span>
+        <span class="arrow" aria-hidden="true">→</span>
+        <span class="chip chip-live"><span class="glyph" aria-hidden="true">●</span>live</span>
+        <span class="arrow" aria-hidden="true">→</span>
+        <span class="chip chip-completed"><span class="glyph" aria-hidden="true">■</span>completed</span>
+      </div>
+      <p class="rail-note reveal">Six of fifteen server-owned states shown. A reviewer can request changes (<span class="chip chip-revision" style="font-size:0.78rem;padding:2px 10px;"><span class="glyph" aria-hidden="true">↺</span>revision requested</span>), and terminal side states (<span class="chip chip-rejected" style="font-size:0.78rem;padding:2px 10px;">rejected</span> <span class="chip chip-cancelled" style="font-size:0.78rem;padding:2px 10px;">cancelled</span> <span class="chip chip-expired" style="font-size:0.78rem;padding:2px 10px;">expired</span>) close the workflow while the event record and its full history persist.</p>
+
+      <div class="routes">
+        <div class="card route reveal">
+          <h3>Low risk <code>event_low_risk</code></h3>
+          <ol>
+            <li><span class="step">1</span>Advisor endorsement</li>
+            <li><span class="step">2</span>Student LIFE approval</li>
+          </ol>
+          <p class="cond">The default route for on-campus events under the budget threshold.</p>
+        </div>
+        <div class="card route reveal">
+          <h3>Off campus <code>event_off_campus</code></h3>
+          <ol>
+            <li><span class="step">1</span>Advisor endorsement</li>
+            <li><span class="step">2</span>Student LIFE approval</li>
+            <li><span class="step">3</span>Safety review</li>
+            <li><span class="step">3</span>Facilities review, in parallel, only when the venue is institution-managed</li>
+          </ol>
+          <p class="cond">Selected when <code>isOffCampus</code> is true. Skipped branches are recorded as skipped, so the route taken is fully auditable.</p>
+        </div>
+        <div class="card route reveal">
+          <h3>Budget threshold <code>event_budget_threshold</code></h3>
+          <ol>
+            <li><span class="step">+</span>The otherwise-applicable route</li>
+            <li><span class="step">$</span>Finance approval appended</li>
+          </ol>
+          <p class="cond">Applied when the estimated budget reaches the institution's threshold. Conditions compose: off-campus over threshold gets both.</p>
+        </div>
+      </div>
+
+      <div class="wf-props">
+        <div class="card reveal">
+          <h3>Versions pin forever</h3>
+          <p>Definitions are immutable version rows. An in-flight approval finishes under the rules it started with, and the audit trail names the version on every decision, so history can be replayed against the rules that governed it.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Idempotency is a constraint</h3>
+          <p>One decision row per stage is a database <code>unique</code> constraint, and a decided stage matches no update policy. Double-deciding is impossible at the schema level, not merely discouraged at the API level.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Revisions append, never overwrite</h3>
+          <p>Requesting changes re-opens the submission; resubmission inserts fresh stage rows with an incremented attempt counter. Every attempt's decisions survive as first-class history with a side-by-side diff.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== SECURITY ============================== -->
+  <section id="security" aria-labelledby="security-h">
+    <div class="wrap">
+      <p class="kicker reveal">Security and tenancy</p>
+      <h2 id="security-h" class="reveal">One mistake must never equal one breach</h2>
+      <p class="lede reveal">WayClub holds student data for many institutions in one database, so cross-tenant disclosure is the critical risk. Isolation is enforced where application bugs cannot reach it: in Postgres, with row-level security binding the only role that ever handles requests.</p>
+
+      <div class="sec-grid">
+        <div class="card reveal">
+          <h3>Deny by default</h3>
+          <p>Row-level security is enabled on every tenant-scoped table. Tables without an API surface yet have no policies and no grants at all, so the safe state is the default state. Policies grant the minimum each role needs, and write policies are stricter than read policies.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Identity travels with the transaction</h3>
+          <p>The API verifies the session JWT, then binds its claims to the database transaction. Policies read the user and institution from those claims, so pooled connections can never leak identity between requests.</p>
+          <div class="codeblock" aria-label="SQL: setting claims per transaction"><span class="hl">select</span> set_config(
+  'request.jwt.claims',
+  $claims_json,
+  <span class="hl">true</span>  <span style="opacity:.7">-- transaction-local</span>
+);</div>
+        </div>
+        <div class="card reveal">
+          <h3>404, indistinguishable</h3>
+          <p>A request for another tenant's row returns 404, byte-identical to a genuinely missing row. Tenants cannot be enumerated and existence cannot be probed. An isolation test discovers every tenant-scoped table mechanically and proves cross-tenant reads and writes are denied on each, in both directions, with positive controls so it cannot pass vacuously.</p>
+        </div>
+        <div class="card reveal">
+          <h3>A hash-chained audit log</h3>
+          <p>Every decision, transition and permission change appends an audit row hashing the previous row for that institution. No role can update or delete audit rows; a trigger blocks even the table owner. Tampering breaks the chain visibly from that point onward, and the test suite verifies the chain by independent recomputation.</p>
+          <div class="codeblock" aria-label="Audit hash chain formula">hash = sha256( prev_hash | institution | actor
+             | action | target | detail | utc_time )</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DESIGN ============================== -->
+  <section id="design" aria-labelledby="design-h">
+    <div class="wrap">
+      <p class="kicker reveal">Design system</p>
+      <h2 id="design-h" class="reveal">Calm operations, accessible by construction</h2>
+      <p class="lede reveal">The interface is neutral; colour appears when something has a status, needs attention or is interactive. The workflow states below are rendered from the product's real tokens, and this page follows your system's light or dark preference the same way the app does.</p>
+
+      <div class="palette" aria-label="The ten workflow-state chips, rendered from real tokens">
+        <span class="chip chip-draft"><span class="glyph" aria-hidden="true">✎</span>Draft</span>
+        <span class="chip chip-submitted"><span class="glyph" aria-hidden="true">▲</span>Submitted</span>
+        <span class="chip chip-under-review"><span class="glyph" aria-hidden="true">◐</span>Under review</span>
+        <span class="chip chip-revision"><span class="glyph" aria-hidden="true">↺</span>Revision requested</span>
+        <span class="chip chip-approved"><span class="glyph" aria-hidden="true">✓</span>Approved</span>
+        <span class="chip chip-rejected"><span class="glyph" aria-hidden="true">✕</span>Rejected</span>
+        <span class="chip chip-live"><span class="glyph" aria-hidden="true">●</span>Live</span>
+        <span class="chip chip-completed"><span class="glyph" aria-hidden="true">■</span>Completed</span>
+        <span class="chip chip-cancelled"><span class="glyph" aria-hidden="true">⊘</span>Cancelled</span>
+        <span class="chip chip-expired"><span class="glyph" aria-hidden="true">◷</span>Expired</span>
+      </div>
+      <p class="palette-note">A state is always colour plus label plus icon; nothing in the product conveys status by colour alone.</p>
+
+      <div class="ds-facts">
+        <div class="card reveal">
+          <h3>A contrast gate, not a checklist</h3>
+          <p>Every token pair is verified programmatically on every build: 54 pairs, 108 checks across light and dark. Text pairs currently sit at or above 4.97:1 against a 4.5:1 minimum. A violation fails the build; there is no manual sign-off path around it.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Branding that cannot break contrast</h3>
+          <p>An institution may change a logo and two brand colours, nothing else. Saved colours are darkened or lightened until their button ink meets 4.5:1, and the derived values are what ship. A tenant can submit pure yellow and still get compliant buttons.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Keyboard-complete, motion-respectful</h3>
+          <p>Every flow works with keyboard alone, behind a 2px offset focus ring that overflow cannot clip. Under reduced-motion preferences, every animation on this page and in the product collapses to nothing.</p>
+          <span class="focus-demo"><span class="btn btn-quiet" aria-hidden="true" style="pointer-events:none;">A focused control</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== SCREENS ============================== -->
+  <section id="screens" aria-labelledby="screens-h">
+    <div class="wrap">
+      <p class="kicker reveal">The product</p>
+      <h2 id="screens-h" class="reveal">Screens</h2>
+      <p class="lede reveal">Captured from the running application against seeded demo data, not mocked up. Each screen is shown in the viewer's own colour scheme.</p>
+      <div class="screens">
+        <figure class="shot reveal">
+          <img class="light" src="assets/screens/05-event-status.png" alt="An event page showing the status chip, approval progress with each stage and its decision, and the audit history timeline." loading="lazy" width="2880" height="1800">
+          <img class="dark" src="assets/screens/05-event-status-dark.png" alt="An event page showing the status chip, approval progress with each stage and its decision, and the audit history timeline." loading="lazy" width="2880" height="1800">
+          <figcaption><strong>The one record</strong><span>Proposal, stage-by-stage approval progress and the decision history, all on the event itself.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img class="light" src="assets/screens/07-review-detail.png" alt="A reviewer's decision page with the full proposal, approval progress and approve, request changes and reject actions." loading="lazy" width="2880" height="1800">
+          <img class="dark" src="assets/screens/07-review-detail-dark.png" alt="A reviewer's decision page with the full proposal, approval progress and approve, request changes and reject actions." loading="lazy" width="2880" height="1800">
+          <figcaption><strong>Reviewer decision</strong><span>Full event context on one page. Request changes and reject both require a written comment.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img class="light" src="assets/screens/06-reviewer-queue.png" alt="The approvals queue listing stages assigned to the reviewer, with status, club, risk and due-date filters." loading="lazy" width="2880" height="1800">
+          <img class="dark" src="assets/screens/06-reviewer-queue-dark.png" alt="The approvals queue listing stages assigned to the reviewer, with status, club, risk and due-date filters." loading="lazy" width="2880" height="1800">
+          <figcaption><strong>Approvals queue</strong><span>Only the stages assigned to your reviewer roles, sorted by service-level due date.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img class="light" src="assets/screens/04-edit-event.png" alt="The multi-step event proposal form showing the Basics step, step navigation and an autosave indicator." loading="lazy" width="2880" height="1800">
+          <img class="dark" src="assets/screens/04-edit-event-dark.png" alt="The multi-step event proposal form showing the Basics step, step navigation and an autosave indicator." loading="lazy" width="2880" height="1800">
+          <figcaption><strong>Proposal form</strong><span>Six steps, autosave with an honest saved-at indicator, and review before submit.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img class="light" src="assets/screens/10-admin-audit.png" alt="The administrator audit log table listing time, actor, kind and detail for each recorded action." loading="lazy" width="2880" height="1800">
+          <img class="dark" src="assets/screens/10-admin-audit-dark.png" alt="The administrator audit log table listing time, actor, kind and detail for each recorded action." loading="lazy" width="2880" height="1800">
+          <figcaption><strong>Audit log</strong><span>Append-only and hash-chained in the database. Entries cannot be edited or deleted, by anyone.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img class="light" src="assets/screens/01-student-home.png" alt="The home dashboard showing required actions, upcoming events, club memberships and recent notifications." loading="lazy" width="2880" height="1800">
+          <img class="dark" src="assets/screens/01-student-home-dark.png" alt="The home dashboard showing required actions, upcoming events, club memberships and recent notifications." loading="lazy" width="2880" height="1800">
+          <figcaption><strong>Home</strong><span>Required actions first. Every number leads somewhere useful, and empty states say why.</span></figcaption>
+        </figure>
+      </div>
+      <p class="screens-note reveal">Ten screens exist in the build; six are shown here. The remainder (discover, club workspace, organiser check-in, profile and records) are in the repository under <code>assets/screens/</code>.</p>
+    </div>
+  </section>
+
+  <!-- ============================== STACK ============================== -->
+  <section id="stack" aria-labelledby="stack-h">
+    <div class="wrap">
+      <p class="kicker reveal">Under the hood</p>
+      <h2 id="stack-h" class="reveal">The stack</h2>
+      <p class="lede reveal">A pnpm monorepo: contract-first REST between a NestJS modular monolith and a Next.js web app, PostgreSQL 17 as the enforcement layer, and a Flutter check-in app planned against the same contract.</p>
+      <div class="stack reveal" role="list" aria-label="Technologies">
+        <span role="listitem">PostgreSQL 17 + RLS</span>
+        <span role="listitem">NestJS 11</span>
+        <span role="listitem">Next.js App Router</span>
+        <span role="listitem">TypeScript strict</span>
+        <span role="listitem">TanStack Query</span>
+        <span role="listitem">Tailwind v4</span>
+        <span role="listitem">pnpm workspaces</span>
+        <span role="listitem">vitest</span>
+        <span role="listitem">Design tokens (W3C format)</span>
+        <span role="listitem">Flutter (planned)</span>
+        <span role="listitem">GitHub Actions CI</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap foot-inner">
+    <p>WayClub · an engineering showcase by <a href="https://yeegz.github.io">Yousof Selim</a>. MIT licensed. No analytics, no trackers, no external requests.</p>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="https://github.com/yeegz/WayClub-showcase">github.com/yeegz/WayClub-showcase</a>
+      <a href="https://yeegz.github.io">yeegz.github.io</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveals: IntersectionObserver + setTimeout stagger, with a debounced
+  // scroll fallback and a final safety net so content can never remain hidden.
+  // No rAF loops, no ambient animation, and nothing animates under reduced motion.
+  (function () {
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    if (reduced || !('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+
+    var queue = [];
+    var flushScheduled = false;
+    function enqueue(el) {
+      if (el.classList.contains('in') || queue.indexOf(el) !== -1) return;
+      queue.push(el);
+      if (!flushScheduled) {
+        flushScheduled = true;
+        setTimeout(flush, 0);
+      }
+    }
+    function flush() {
+      flushScheduled = false;
+      var batch = queue.splice(0);
+      batch.forEach(function (el, i) {
+        setTimeout(function () { el.classList.add('in'); }, i * 70);
+      });
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          io.unobserve(entry.target);
+          enqueue(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    items.forEach(function (el) { io.observe(el); });
+
+    // Fallback: a debounced viewport sweep on scroll/resize, in case the
+    // observer is throttled (some embedded or background rendering contexts).
+    var sweepTimer = null;
+    function sweep() {
+      var limit = (window.innerHeight || document.documentElement.clientHeight) * 0.96;
+      items.forEach(function (el) {
+        if (el.classList.contains('in')) return;
+        var r = el.getBoundingClientRect();
+        if (r.top < limit && r.bottom > 0) enqueue(el);
+      });
+    }
+    function scheduleSweep() {
+      if (sweepTimer) clearTimeout(sweepTimer);
+      sweepTimer = setTimeout(sweep, 120);
+    }
+    window.addEventListener('scroll', scheduleSweep, { passive: true });
+    window.addEventListener('resize', scheduleSweep, { passive: true });
+    setTimeout(sweep, 150);
+
+    // Safety net: whatever has not revealed after 6 seconds reveals anyway.
+    setTimeout(function () {
+      items.forEach(function (el) { el.classList.add('in'); });
+    }, 6000);
+  })();
+</script>
+</body>
+</html>
