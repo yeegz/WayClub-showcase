@@ -28,7 +28,7 @@ The event lifecycle is the heart of the product, so its states have first-class 
 
 Every colour pair the system ships is verified programmatically on every build, in both light and dark modes:
 
-- **54 pairs, 108 checks per build.** Text pairs (body, chips, buttons, statuses, links) must meet 4.5:1; non-text UI (focus ring, input borders) must meet 3:1. Disabled colours are exempt per WCAG, and disabled state must never be communicated by colour alone.
+- **77 pairs, 154 checks per build.** Text pairs (body, chips, buttons, statuses, links) must meet 4.5:1; non-text UI (focus ring, input borders) must meet 3:1. Disabled colours are exempt per WCAG, and disabled state must never be communicated by colour alone.
 - **Current worst ratio: 3.79:1**, on a border pair whose minimum is 3:1 (`color.border.strong` on `color.bg.canvas`, light mode).
 - **Every text pair sits at or above 4.97:1**, the tightest being the accent button ink in light mode and the danger button ink in dark mode, both at 4.97:1.
 - The full computed table is regenerated into `dist/contrast-report.md` on every build, so the numbers above are reproducible artefacts, not a designer's recollection.

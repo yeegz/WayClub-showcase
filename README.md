@@ -47,7 +47,7 @@ flowchart LR
     end
 
     subgraph PG["PostgreSQL 17"]
-        RLS["RLS on every tenant-scoped table<br/>deny-by-default, forced"]
+        RLS["RLS on every tenant-scoped table<br/>deny-by-default"]
         AUD["audit_event<br/>append-only, hash-chained"]
     end
 
@@ -145,7 +145,7 @@ Several findings remain open at the time of writing, including audit-chain order
 
 ## Design and accessibility
 
-WCAG 2.2 AA is a release requirement, not a polish pass. The token system ships light and dark themes, and every colour pair it exposes is verified programmatically at build time: 54 pairs, 108 checks across both modes, with the build failing on any violation. Every text pair currently sits at or above 4.97:1; the worst checked pair is 3.79:1 on a border that needs 3:1. Institution branding is constrained by construction: a tenant can change a logo and two brand colours, and the derived values are adjusted until they meet contrast, so a tenant cannot break readability.
+WCAG 2.2 AA is a release requirement, not a polish pass. The token system ships light and dark themes, and every colour pair it exposes is verified programmatically at build time: 77 pairs, 154 checks across both modes, with the build failing on any violation. Every text pair currently sits at or above 4.97:1; the worst checked pair is 3.79:1 on a border that needs 3:1. Institution branding is constrained by construction: a tenant can change a logo and two brand colours, and the derived values are adjusted until they meet contrast, so a tenant cannot break readability.
 
 Full detail: [docs/04-accessibility-and-design.md](docs/04-accessibility-and-design.md).
 
@@ -155,10 +155,10 @@ This section follows a strict rule: claim only what exists at each maturity tier
 
 **Built** (technical scope, verified by test suites in the private repository):
 
-- A multi-tenant Postgres 17 foundation: 58 domain tables across 8 migrations, RLS enabled on every tenant-scoped table, deny-by-default policies for the pilot slice, and a 29-test suite covering cross-tenant isolation on every tenant-scoped table, permission enforcement, approval integrity, audit immutability with hash-chain verification by recomputation, and optimistic concurrency.
+- A multi-tenant Postgres 17 foundation: 79 domain tables across 21 migrations, RLS enabled on every tenant-scoped table, deny-by-default, 126 policies, and a 93-test database suite covering cross-account isolation on every tenant-scoped table, the standalone-versus-institution boundary, permission enforcement, approval integrity, audit immutability with hash-chain verification by recomputation under concurrent writes, and optimistic concurrency.
 - A versioned in-application workflow engine: immutable definition versions, instances that pin their version forever, structurally idempotent approvals, append-only revision attempts, and a single guarded transition path with typed error codes.
 - An append-only, per-tenant hash-chained audit log written by database triggers, so key state changes cannot skip it.
-- A cross-platform design token system with an automated WCAG contrast gate (108 checks per build) and constrained tenant branding.
+- A cross-platform design token system with an automated WCAG contrast gate (154 checks per build) and constrained tenant branding.
 - The web vertical slice of the pilot flow: propose, submit, review and decide, register, check in by accessible code entry, and read the resulting involvement record.
 
 **Designed** (specified and binding, not yet implemented; no usage or performance claims permitted):

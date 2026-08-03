@@ -56,7 +56,7 @@ Because the shim matches the hosted contract (`auth.users`, `auth.uid()`, `auth.
 
 Migration `008_rls_and_grants.sql` enables RLS on 57 tables, then writes policies only for the tables the pilot slice actually reaches. The interesting part is what happens to the rest.
 
-The schema is deliberately broad (59 tables across 8 migrations: venues, budgets, meetings, tasks, files and more, modelled now so the domain model is honest about where the product is going). Thirty-one of those tables are "breadth" tables with no API surface yet. They get:
+The schema is deliberately broad (79 tables across 21 migrations: venues, budgets, meetings, tasks, files and more, modelled now so the domain model is honest about where the product is going). Thirty-one of those tables are "breadth" tables with no API surface yet. They get:
 
 - RLS enabled, with **no policies**: in Postgres, RLS with no policy denies everything.
 - **No grants** to `wayclub_app` at all.
@@ -124,7 +124,7 @@ Around that core, the suite adds the checks that keep the generic test honest:
 - **INSERT smuggling**: inserting a row that claims the other tenant's `institution_id` is refused by `WITH CHECK`.
 - **The tenant list itself is invisible**: `select id from public.institution` returns exactly the caller's own institution.
 
-The seed ships two tenants for exactly this purpose: "Sunway Pilot (unofficial demo)" and the fully fictional "Meridian University", which exists so the denial tests always have a second tenant to fail to read.
+The seed ships three tenants for exactly this purpose: "Sunway Pilot (unofficial demo)" and the fully fictional "Meridian University", so the denial tests always have a second tenant to fail to read, plus "Aurora Film Society", a standalone club account belonging to no university at all. The third one matters: it proves the tenant boundary is the account rather than the institution, and that a club with no institution cannot acquire one.
 
 ## 404, indistinguishable from not-found
 

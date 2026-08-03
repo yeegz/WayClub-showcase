@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://yeegz.github.io/WayClub-showcase/">
 <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#10141C" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%232E52C4'/%3E%3Ctext%20x='16'%20y='22'%20font-family='sans-serif'%20font-size='16'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%23325AC8%22%2F%3E%3Cpath%20d%3D%22M14%209%20H34%20A4.5%204.5%200%200%201%2038.5%2013.5%20V25%20C38.5%2031.6%2032.4%2035.9%2024%2039%20C15.6%2035.9%209.5%2031.6%209.5%2025%20V13.5%20A4.5%204.5%200%200%201%2014%209%20Z%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Cpath%20d%3D%22M16.2%2016.6%20L21%2028.2%20L24%2020.4%20L27%2028.2%20L31.8%2014.8%22%20fill%3D%22none%22%20stroke%3D%22%23325AC8%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <style>
   /* ------------------------------------------------------------------
      WayClub design tokens (values from packages/design-tokens dist).
@@ -137,12 +137,9 @@
   .site-inner { display: flex; align-items: center; gap: 24px; height: 60px; }
   .wordmark { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.05rem; color: var(--wc-color-text-primary); }
   .wordmark:hover { text-decoration: none; }
-  .mark {
-    width: 26px; height: 26px; border-radius: 7px; flex: none;
-    background: var(--wc-brand-primary); color: var(--wc-brand-on-primary);
-    display: inline-flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.85rem;
-  }
+  /* The route mark, inlined so it inherits ink and works in both themes from
+     one file. It carries the brand colour; the name carries text colour. */
+  .mark { width: 26px; height: 26px; flex: none; color: var(--wc-brand-primary); }
   nav.primary { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
   nav.primary a {
     color: var(--wc-color-text-secondary); font-size: 0.875rem; font-weight: 500;
@@ -337,7 +334,7 @@
 
 <header class="site">
   <div class="wrap site-inner">
-    <a class="wordmark" href="#top" aria-label="WayClub, back to top"><span class="mark" aria-hidden="true">W</span>WayClub</a>
+    <a class="wordmark" href="#top" aria-label="WayClub, back to top"><svg class="mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" focusable="false"><path d="M4 7 L10.6 25 L16 12.6 L21.4 25 L28 3.5" fill="none" stroke="currentColor" stroke-width="3.9" stroke-linecap="round" stroke-linejoin="round"/></svg>WayClub</a>
     <nav class="primary" aria-label="Sections">
       <a href="#record" class="hide-sm">One record</a>
       <a href="#workflow" class="hide-sm">Workflow</a>
@@ -363,12 +360,12 @@
       <p class="hero-note">This page is an honest write-up of a system in build. No pilot has run, so no usage, adoption or performance claims appear anywhere on it. The demo tenant is named "Sunway Pilot (unofficial demo)" and implies no institutional affiliation or endorsement.</p>
 
       <div class="stats" role="list" aria-label="Verified build numbers">
-        <div class="stat reveal" role="listitem"><b>58</b><span>domain tables, 8 migrations</span></div>
-        <div class="stat reveal" role="listitem"><b>29</b><span>tests in the DB foundation suite</span></div>
-        <div class="stat reveal" role="listitem"><b>108</b><span>WCAG contrast checks per build</span></div>
+        <div class="stat reveal" role="listitem"><b>79</b><span>domain tables, 21 migrations</span></div>
+        <div class="stat reveal" role="listitem"><b>432</b><span>tests: 93 database, 243 API, 96 web</span></div>
+        <div class="stat reveal" role="listitem"><b>154</b><span>WCAG contrast checks per build</span></div>
         <div class="stat reveal" role="listitem"><b>15</b><span>event lifecycle states</span></div>
-        <div class="stat reveal" role="listitem"><b>3</b><span>seeded approval routes</span></div>
-        <div class="stat reveal" role="listitem"><b>2</b><span>tenants seeded to prove isolation</span></div>
+        <div class="stat reveal" role="listitem"><b>126</b><span>row-level security policies</span></div>
+        <div class="stat reveal" role="listitem"><b>3</b><span>tenants seeded, one with no university</span></div>
       </div>
       <p class="stats-caption">Numbers are reproducible from the private build repository's migrations and test suites.</p>
     </div>
@@ -547,7 +544,7 @@
       <div class="ds-facts">
         <div class="card reveal">
           <h3>A contrast gate, not a checklist</h3>
-          <p>Every token pair is verified programmatically on every build: 54 pairs, 108 checks across light and dark. Text pairs currently sit at or above 4.97:1 against a 4.5:1 minimum. A violation fails the build; there is no manual sign-off path around it.</p>
+          <p>Every token pair is verified programmatically on every build: 77 pairs, 154 checks across light and dark. Text pairs currently sit at or above 4.97:1 against a 4.5:1 minimum. A violation fails the build; there is no manual sign-off path around it.</p>
         </div>
         <div class="card reveal">
           <h3>Branding that cannot break contrast</h3>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="WayClub">
+  <title>WayClub</title>
+  <!--
+    A single bold W whose right arm finishes higher than its left.
+
+    That asymmetry is the whole idea. The letterform is a route: it drops
+    through two valleys (the review stages an event is sent down into) and
+    comes out higher than it went in (approved). Nothing is added to say so:
+    no tick, no arrow, no second colour, no floating node. The meaning is in
+    the geometry, which is why it survives being shrunk to a favicon.
+
+    Two earlier attempts are worth recording so they are not repeated. A filled
+    dot at the terminal detached from the stroke at large sizes and closed into
+    a blob at small ones. Colouring the final leg made the eye split the letter
+    in two, so it read as a V followed by a stray slash rather than a W.
+
+    One weight (3.9 on a 32 grid), round caps and joins to match the Phosphor
+    idiom the interface uses, and one colour that is inherited from context, so
+    the mark works on light, on dark, in a single-colour print and in
+    embroidery without a variant file.
+
+    Left arm tops out at y=7, right at y=3.5. The lift is deliberately small:
+    large enough to feel, small enough that it still reads as a W and not a
+    check mark.
+  -->
+  <path d="M4 7 L10.6 25 L16 12.6 L21.4 25 L28 3.5"
+        fill="none" stroke="currentColor" stroke-width="3.9"
+        stroke-linecap="round" stroke-linejoin="round" />
+</svg>
