@@ -30,7 +30,7 @@ This is not hypothetical. The research behind WayClub is grounded in a Malaysian
 
 WayClub's core design decision is that **the event is one durable record**. The proposal, the multi-stage approval, the poster, registration, the entry fee, attendance, the photographs taken on the day, the post-event report and the student's verified involvement record all attach to the same object, through fifteen server-owned states from `draft` to `archived`. Information entered once carries forward; nothing is re-keyed between modules, and nothing is lost between an email thread and a spreadsheet.
 
-<p align="center"><img src="assets/event-record-flow.svg" alt="One record flowing through five phases: proposal, approval, registration, attendance, verified record" width="720"></p>
+<p align="center"><img src="assets/event-record-flow.svg" alt="One record carrying six phases: proposal, approval, registration, attendance, report and verified record" width="720"></p>
 
 Everything else in the architecture exists to make that one record trustworthy: who approved it and under which rules, who attended, and what a student can later prove.
 
@@ -110,7 +110,7 @@ Full detail: [docs/06-colour-from-content.md](docs/06-colour-from-content.md) an
 
 Cross-tenant information disclosure is the critical risk in the threat model, so the boundary lives in the database. **The tenant root is the account, not the institution**, because a club must be able to adopt WayClub without its university being a customer. Two columns sit on every tenant-scoped table and they are not redundant: `account_id` is who owns the data and is never null, and `institution_id` is who governs it and is null for a standalone club.
 
-- **Deny by default, in two layers.** Row-level security is enabled on every tenant-scoped table in the migration that creates it. 174 policies across 63 tables, every one keyed on `account_id`, asserted mechanically against `pg_policy` rather than against a hand-kept list. Twenty-six tables have RLS on, no policies and no grants, so an unbuilt surface fails at the grant layer first and the policy layer second.
+- **Deny by default, in two layers.** Row-level security is enabled on every tenant-scoped table in the migration that creates it. Freshly re-read from the catalogue on 2026-08-05, the current build carries 177 policies across 64 tables. The tenant boundary remains account-rooted and is asserted mechanically against `pg_policy` rather than against a hand-kept list. Twenty-six tables still have RLS on, no policies and no grants, so an unbuilt surface fails at the grant layer first and the policy layer second.
 - **Identity travels with the transaction.** Each request runs as a Postgres role that owns nothing and holds no bypass attribute, inside one transaction that first sets the caller's verified claims as a transaction-local setting. Policies read them through a shim shaped exactly like hosted Supabase, so pooled connections cannot leak identity between requests and a later move to hosted Postgres is a connection-string swap rather than a policy rewrite.
 - **A club cannot impersonate an institution, structurally.** Every tenant-scoped row carries a composite foreign key binding its `institution_id` to its own account. That is a constraint, not a policy, so it binds the table owner and the bypass role exactly as it binds the request role. A standalone account owns no institution row, so it cannot write an institution reference anywhere at all, cannot hold an official reviewer role, and cannot record an approval carrying a university's authority. Verified: even the owning role gets SQLSTATE `23503`.
 - **404, indistinguishable from not-found.** A request for another tenant's row returns 404, byte-identical to a request for a row that never existed. The test that proves it sits directly beside the test proving a same-tenant outsider gets 403 with a permission-denied code, which is what makes the distinction real rather than incidental.
@@ -177,22 +177,22 @@ One rule: claim only what exists at each tier, and never borrow wording from the
 
 ### The numbers, and how they were taken
 
-Read from the database catalogue and from test runs on 2026-08-04 at commit `0e0fdeb`, on the build machine.
+Catalogue counts re-read on 2026-08-05 against the current local seeded build. Test results below were also re-run on 2026-08-05 and are intentionally reported as they landed, not rounded up into "basically green".
 
 | Fact | Value | How |
 |---|---|---|
-| Migrations applied | 35 | `schema_migrations`, and the migration directory, agree |
-| Tables in `public` | 91 | `pg_class` where `relkind='r'` |
-| RLS enabled | 89 of 91 | the exceptions are the global role catalogue and the migration ledger |
-| Policies | 174 across 63 tables, every one keyed on `account_id` | `pg_policy` joined to `pg_class` |
+| Migrations applied | 40 | `schema_migrations`, and the migration directory, agree |
+| Tables in `public` | 93 | `pg_class` where `relkind='r'` |
+| RLS enabled | 90 of 93 | the rest are the global role catalogue, the migration ledger and one new account-scoped table still missing RLS |
+| Policies | 177 across 64 tables | `pg_policy` joined to `pg_class` |
 | Tables with RLS, no policies and no grants | 26 | the honest breadth gap |
-| Database suite | 100 passed | `vitest run --dir infra/postgres/tests` |
-| API integration suite, against real Postgres | 640 passed, 38 files | `pnpm --filter @wayclub/api test` |
-| Web unit and component suite | 636 passed, 70 files | `pnpm --filter @wayclub/web test` |
+| Database suite | 100 passed, 4 failed | `vitest run --dir infra/postgres/tests` |
+| API integration suite, against real Postgres | 639 passed, 4 failed, 39 files | `pnpm --filter @wayclub/api test` |
+| Web unit and component suite | 651 passed, 2 failed, 74 files | `pnpm --filter @wayclub/web test` |
 | Design-token contrast gate | 562 checks, plus 380 club-theme and 280 club-ambience | `node build.mjs --check` |
 | Browser journeys | 11 declared across 6 spec files | not re-run for this document |
 
-**1,376 unit and integration tests.** Those counts move whenever work lands, which is the honest reason to re-run them rather than quote them. Test measurement on that machine is genuinely fragile: every suite resets its database in setup, so two runners sharing one database drop schemas out from under each other, and a stray API process keeps running a scheduled sweep against whichever database it was pointed at. Isolation exists and each runner must opt in.
+**Fresh verification is not fully green.** On 2026-08-05 the database suite failed 4 tests, the API suite failed 4 tests, and the web suite failed 2 tests. The concrete failures reached during that pass were: missing RLS on `club_invite`; auth-schema guard regressions in the database suite; standalone onboarding conflicts and one unexpected 404 in the API suite; and two web regressions in `ambience.test.tsx` and `design-system-rules.test.ts`. That is the status to believe until a newer run replaces it.
 
 ## Deep dives
 
@@ -211,7 +211,7 @@ Each document stands alone and cites the private repository by path.
 
 - `site/` is a self-contained landing page. No analytics, no trackers, no external requests of any kind: no external stylesheet, script, font or image. It carries the same violet-black world as the product, works from 320px, is keyboard-complete with a visible focus ring on every stop, and holds still under `prefers-reduced-motion`. It is the showcase site for this repository, distinct from the live product deployment above.
 - `assets/` holds the self-made SVGs used by this README and the landing page, and the application screenshots when they exist. The deploy workflow copies it into the published site so one checked-in copy serves both.
-- **There are no screenshots at the moment.** The ones that used to be here were of a product that no longer looks like this: they predate the whole identity described above, and the application shell has changed again since. They were removed rather than left to flatter a version nobody would recognise, because a stale screenshot is worse than no screenshot.
+- Current captures were refreshed on 2026-08-05 against the current local seeded build: the public landing page on desktop and phone width, the signed-in club workspace, the reviewer queue, and the phone-width discover feed with the current event cards.
 - The build repository (application code, migrations, tests, seeds) is private. This showcase quotes its structure and numbers accurately and contains no application code, no credentials and no real personal data.
 - Licence: [MIT](LICENSE). Copy anything you find useful.
 

@@ -1,36 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="132" viewBox="0 0 720 132" role="img" aria-label="One event record flowing through five phases: proposal, approval, registration, attendance, verified record">
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="150" viewBox="0 0 720 150" role="img" aria-label="One event record carrying six phases: proposal, approval, registration, attendance, report and verified record">
   <title>One connected event record</title>
-  <desc>A proposal becomes an approval, a registration list, an attendance record and a verified involvement record, all attached to the same event object.</desc>
-  <rect x="0.5" y="0.5" width="719" height="131" rx="12" fill="#FFFFFF" stroke="#E2E5EC"/>
-  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
-    <!-- connectors -->
-    <g stroke="#9AA2B1" stroke-width="1.5" fill="#9AA2B1">
-      <line x1="137" y1="58" x2="152" y2="58"/><path d="M152 54 L159 58 L152 62 Z" stroke="none"/>
-      <line x1="267" y1="58" x2="282" y2="58"/><path d="M282 54 L289 58 L282 62 Z" stroke="none"/>
-      <line x1="417" y1="58" x2="432" y2="58"/><path d="M432 54 L439 58 L432 62 Z" stroke="none"/>
-      <line x1="565" y1="58" x2="580" y2="58"/><path d="M580 54 L587 58 L580 62 Z" stroke="none"/>
+  <desc>A single event record carries a proposal, a multi-stage approval, a registration list, attendance, a post-event report and a student's verified involvement record. Each phase is drawn as a chip on one continuous rail, because they are one object rather than six handoffs.</desc>
+  <!--
+    Drawn on the product's own dark card surface rather than on the page, so it
+    reads on a light and a dark GitHub theme without two files. The rail is one
+    continuous line for the same reason the product has one record: the point
+    is that nothing is handed over.
+  -->
+  <defs>
+    <linearGradient id="rail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity="0.25"/>
+      <stop offset="0.5" stop-color="#8B5CF6" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#5EE7C4" stop-opacity="0.85"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.16" cy="0.2" r="0.75">
+      <stop offset="0" stop-color="#5B35B0" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#5B35B0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="719" height="149" rx="18" fill="#12101B" stroke="#2E2A3D"/>
+  <rect x="0.5" y="0.5" width="719" height="149" rx="18" fill="url(#glow)"/>
+
+  <!-- The rail: one line, not five arrows between five boxes. -->
+  <line x1="42" y1="70" x2="678" y2="70" stroke="url(#rail)" stroke-width="2" stroke-linecap="round"/>
+
+  <g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+    <g font-size="13" font-weight="600" text-anchor="middle">
+      <rect x="30" y="52" width="96" height="36" rx="18" fill="#1A1725" stroke="#413A5C"/>
+      <text x="78" y="74.5" fill="#D7CCFF">Proposal</text>
+
+      <rect x="146" y="52" width="96" height="36" rx="18" fill="#1A1725" stroke="#413A5C"/>
+      <text x="194" y="74.5" fill="#D7CCFF">Approval</text>
+
+      <rect x="262" y="52" width="112" height="36" rx="18" fill="#1A1725" stroke="#413A5C"/>
+      <text x="318" y="74.5" fill="#D7CCFF">Registration</text>
+
+      <rect x="394" y="52" width="106" height="36" rx="18" fill="#1A1725" stroke="#413A5C"/>
+      <text x="447" y="74.5" fill="#D7CCFF">Attendance</text>
+
+      <rect x="520" y="52" width="80" height="36" rx="18" fill="#1A1725" stroke="#413A5C"/>
+      <text x="560" y="74.5" fill="#D7CCFF">Report</text>
+
+      <rect x="620" y="52" width="70" height="36" rx="18" fill="#0A3B32" stroke="#0C6A58"/>
+      <text x="655" y="74.5" fill="#A7F4DC">Record</text>
     </g>
-    <!-- chips -->
-    <g font-size="14" font-weight="600" text-anchor="middle">
-      <rect x="31" y="40" width="104" height="36" rx="18" fill="#EFF1F5" stroke="#CDD2DC"/>
-      <text x="83" y="63" fill="#3F4756">Proposal</text>
-      <rect x="161" y="40" width="104" height="36" rx="18" fill="#EDF9F0" stroke="#ADE1C0"/>
-      <text x="213" y="63" fill="#196336">Approval</text>
-      <rect x="291" y="40" width="124" height="36" rx="18" fill="#EDF6FC" stroke="#B0D6F0"/>
-      <text x="353" y="63" fill="#13537C">Registration</text>
-      <rect x="441" y="40" width="122" height="36" rx="18" fill="#EBF8F5" stroke="#A4DFD2"/>
-      <text x="502" y="63" fill="#106051">Attendance</text>
-      <rect x="589" y="40" width="100" height="36" rx="18" fill="#E2E5EC" stroke="#9AA2B1"/>
-      <text x="639" y="63" fill="#2B3240">Record</text>
+
+    <g font-size="10.5" fill="#938FA5" text-anchor="middle">
+      <text x="78" y="108">entered once</text>
+      <text x="194" y="108">conditional stages</text>
+      <text x="318" y="108">capacity, waitlist, fee</text>
+      <text x="447" y="108">code check-in</text>
+      <text x="560" y="108">pre-filled from real rows</text>
+      <text x="655" y="108">private, verified</text>
     </g>
-    <!-- captions -->
-    <g font-size="11" fill="#4C5464" text-anchor="middle">
-      <text x="83" y="98">entered once</text>
-      <text x="213" y="98">conditional stages</text>
-      <text x="353" y="98">capacity + waitlist</text>
-      <text x="502" y="98">idempotent check-in</text>
-      <text x="639" y="98">verified, private</text>
-    </g>
-    <text x="360" y="120" font-size="11" fill="#767F90" text-anchor="middle">one durable event object, nothing re-keyed between modules</text>
+
+    <text x="360" y="133" font-size="11.5" fill="#AAA6BD" text-anchor="middle">One record. Fifteen server-owned states. Every transition audited, and nothing re-keyed between phases.</text>
   </g>
 </svg>

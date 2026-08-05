@@ -1,39 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="WayClub">
   <title>WayClub</title>
   <!--
-    A white club badge on brand blue, with the route cut through it.
+    The application icon: the waypoint, lit, on the product's own violet.
 
-    Student societies already have a visual language: the crest. Every
-    committee makes one, puts it on a poster and stitches it on a jacket. None
-    of the incumbent platforms use it, and a letter in a rounded square is the
-    default every generated icon lands on. So the badge is the idea, but it is
-    layered INSIDE a full-bleed tile rather than being the tile's outline.
+    The field is the gradient the primary action wears, so the icon and the
+    button a person presses are visibly the same material. The point is the
+    only warm thing in the mark.
 
-    That is not a style choice, it is a platform constraint discovered by
-    testing: iOS and Android mask app icons to their own shape. An earlier
-    version made the badge the silhouette and let the final arm break out past
-    its shoulder. It looked like a pencil leaning on a shield, and the
-    protruding arm sat outside the mask, so the platform would simply cut it
-    off. Full bleed behind, badge within the safe area, nothing important
-    outside it.
-
-    Inside the badge the W is the route: two valleys the event is sent down
-    into, and a right arm that finishes higher than the left began. The lift is
-    the meaning and it costs nothing at 16px, because it is geometry rather
-    than a small added element.
+    Platform constraint, learned by testing: iOS and Android mask app icons to
+    their own shape, so nothing that matters may sit near the corners. The tile
+    is full bleed and the glyph spans x=13 to x=35 and y=14 to y=34 on a 48
+    grid, comfortably inside the roughly 80 percent circle every mask keeps. An
+    earlier icon let a stroke break past a badge's shoulder and the platform
+    simply cut it off.
   -->
-  <rect width="48" height="48" rx="11" fill="#325AC8" />
+  <defs>
+    <linearGradient id="wc-field" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A280FF" />
+      <stop offset="1" stop-color="#5B34B8" />
+    </linearGradient>
+  </defs>
 
-  <!-- The badge, sitting inside the platform mask's safe area. -->
-  <path d="M14 9 H34 A4.5 4.5 0 0 1 38.5 13.5 V25
-           C38.5 31.6 32.4 35.9 24 39
-           C15.6 35.9 9.5 31.6 9.5 25 V13.5
-           A4.5 4.5 0 0 1 14 9 Z"
-        fill="#FFFFFF" />
+  <rect width="48" height="48" rx="11" fill="url(#wc-field)" />
 
-  <!-- The route, cut through the badge in the tile's own blue so the two
-       layers read as one object rather than a sticker on a square. -->
-  <path d="M16.2 16.6 L21 28.2 L24 20.4 L27 28.2 L31.8 14.8"
-        fill="none" stroke="#325AC8" stroke-width="3.5"
-        stroke-linecap="round" stroke-linejoin="round" />
+  <g fill="none" stroke="#FFFFFF" stroke-width="5.6"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18.4 14.4 H13.6 V33.6 H18.4" />
+    <path d="M29.6 14.4 H34.4 V33.6 H29.6" />
+  </g>
+
+  <!-- A soft halo, then the point, so it reads as lit rather than printed. One
+       shape at low opacity rather than a blur filter, because filters rasterise
+       unpredictably at favicon sizes. -->
+  <circle cx="24" cy="24" r="9.2" fill="#5EE7C4" opacity="0.20" />
+  <circle cx="24" cy="24" r="5.4" fill="#5EE7C4" />
 </svg>

@@ -1,29 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="WayClub">
   <title>WayClub</title>
   <!--
-    A single bold W whose right arm finishes higher than its left.
+    The waypoint: two brackets framing a single lit point. A place, marked; a
+    point on a way.
 
-    That asymmetry is the whole idea. The letterform is a route: it drops
-    through two valleys (the review stages an event is sent down into) and
-    comes out higher than it went in (approved). Nothing is added to say so:
-    no tick, no arrow, no second colour, no floating node. The meaning is in
-    the geometry, which is why it survives being shrunk to a favicon.
+    It replaced a bold W. That mark was competent and anonymous, because
+    drawing the letter the name starts with is what a product does when it has
+    not found an idea. This one says what WayClub is, and it survives being
+    shrunk: two brackets and a dot are three simple forms with generous space
+    between them, so at 16px they stay three forms rather than closing into a
+    blob.
 
-    Two earlier attempts are worth recording so they are not repeated. A filled
-    dot at the terminal detached from the stroke at large sizes and closed into
-    a blob at small ones. Colouring the final leg made the eye split the letter
-    in two, so it read as a V followed by a stray slash rather than a W.
-
-    One weight (3.9 on a 32 grid), round caps and joins to match the Phosphor
-    idiom the interface uses, and one colour that is inherited from context, so
-    the mark works on light, on dark, in a single-colour print and in
-    embroidery without a variant file.
-
-    Left arm tops out at y=7, right at y=3.5. The lift is deliberately small:
-    large enough to feel, small enough that it still reads as a W and not a
-    check mark.
+    In the product the frame inherits currentColor and the point reads a custom
+    property, so a club's space can light the point in the club's own hue with
+    no variant file. Here the values are explicit, because GitHub renders this
+    file as an image: nothing is inherited and no custom property resolves.
   -->
-  <path d="M4 7 L10.6 25 L16 12.6 L21.4 25 L28 3.5"
-        fill="none" stroke="currentColor" stroke-width="3.9"
-        stroke-linecap="round" stroke-linejoin="round" />
+  <g fill="none" stroke="#8B5CF6" stroke-width="4.2"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11.4 8.6 H8.1 V23.4 H11.4" />
+    <path d="M20.6 8.6 H23.9 V23.4 H20.6" />
+  </g>
+  <circle cx="16" cy="16" r="7.4" fill="#5EE7C4" opacity="0.18" />
+  <circle cx="16" cy="16" r="4.1" fill="#5EE7C4" />
 </svg>

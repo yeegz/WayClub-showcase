@@ -848,13 +848,13 @@ figure.shot figcaption b { color: var(--ink); font-weight: 620; }
       </div>
 
       <dl class="figures">
-        <div><dt>Migrations</dt><dd>35</dd></div>
-        <div><dt>Tables, 89 under RLS</dt><dd>91</dd></div>
-        <div><dt>Account-keyed policies</dt><dd>174</dd></div>
+        <div><dt>Migrations</dt><dd>40</dd></div>
+        <div><dt>Tables, 90 under RLS</dt><dd>93</dd></div>
+        <div><dt>Policies</dt><dd>177</dd></div>
         <div><dt>Contrast checks a build</dt><dd>562</dd></div>
-        <div><dt>Tests, all passing</dt><dd>1,376</dd></div>
+        <div><dt>Fresh failing tests</dt><dd>10</dd></div>
       </dl>
-      <p class="small muted" style="margin-top:.9rem">Read from the database catalogue and from test runs on 2026-08-04, at commit <code>0e0fdeb</code>. The counts move whenever work lands, which is the honest reason to re-run them rather than quote them.</p>
+      <p class="small muted" style="margin-top:.9rem">Catalogue counts were re-read on 2026-08-05 against the current local seeded build. Fresh verification the same day found 4 failing database tests, 4 failing API tests and 2 failing web tests, so this build is deployed but not fully green.</p>
     </div>
   </section>
 
@@ -1084,7 +1084,7 @@ figure.shot figcaption b { color: var(--ink); font-weight: 620; }
       <ul class="rule-list reveal">
         <li>
           <b>Deny by default, in two layers</b>
-          <span>Row-level security is enabled on every tenant-scoped table in the same migration that creates it. 174 policies across 63 tables, every one keyed on <code>account_id</code>, asserted mechanically against <code>pg_policy</code> rather than against a hand-kept list. The other 26 tables have row-level security on, no policies and no grants, so an unbuilt surface fails at the grant layer first and the policy layer second.</span>
+          <span>Row-level security is enabled on every tenant-scoped table in the same migration that creates it. Re-read on 2026-08-05, the current build carries 177 policies across 64 tables. The tenant boundary remains account-rooted and is asserted mechanically against <code>pg_policy</code> rather than against a hand-kept list. Twenty-six tables still have row-level security on, no policies and no grants, so an unbuilt surface fails at the grant layer first and the policy layer second.</span>
         </li>
         <li>
           <b>Identity travels with the transaction</b>
@@ -1159,13 +1159,35 @@ figure.shot figcaption b { color: var(--ink); font-weight: 620; }
       <div class="section-head reveal">
         <p class="micro">Screens</p>
         <h2 id="screens-h">Captured from the running application</h2>
-        <p class="lead">Against the seeded demo database, in both themes and at phone width. Nothing here is a mock-up, and nothing has been retouched.</p>
+        <p class="lead">Against the seeded demo database, on desktop and at phone width. Nothing here is a mock-up, and nothing has been retouched.</p>
       </div>
       <div id="screens-grid" class="grid grid-2 reveal">
-        <div class="callout" style="grid-column:1/-1">
-          <p class="micro">Currently none</p>
-          <p>The captures that used to sit here were of a product that no longer looks like this: they predate the whole identity described above, and the application shell has changed again since. They have been removed rather than left to flatter a version nobody would recognise, because a stale screenshot is worse than no screenshot. New ones are taken against the current build, in both themes and at phone width, and land here when they exist.</p>
+        <figure class="shot">
+          <img src="assets/screens/01-landing-desktop.png" alt="The public WayClub landing page on desktop, with the Create your club hero and product mockup." loading="lazy" width="1600" height="1331">
+          <figcaption><b>Public landing page</b><span>Open sign-up, founder-first club creation, and the product positioned around running one club in one place.</span></figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/screens/02-club-workspace-desktop.png" alt="The Cybersecurity Club workspace overview showing the club banner, committee, tabs and upcoming events." loading="lazy" width="1600" height="1100">
+          <figcaption><b>Club workspace</b><span>A real club room with its own accent, committee, event state, and the tabs the club uses to run work.</span></figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/screens/03-review-queue-desktop.png" alt="The reviewer queue showing filters, one pending stage and an overdue label." loading="lazy" width="1600" height="1100">
+          <figcaption><b>Reviewer queue</b><span>The approval surface stays calm: filterable, due-date aware, and explicit that decisions belong to a human reviewer.</span></figcaption>
+        </figure>
+        <div class="shot-pair">
+          <figure class="shot shot-mobile">
+            <img src="assets/screens/04-landing-mobile.png" alt="The public WayClub landing page at phone width." loading="lazy" width="390" height="2085">
+            <figcaption><b>Landing, phone width</b><span>The same public promise, tuned for a narrow screen rather than squeezed into one.</span></figcaption>
+          </figure>
+          <figure class="shot shot-mobile">
+            <img src="assets/screens/05-discover-mobile.png" alt="The discover feed at phone width, showing current event cards with posters, schedule pills and action buttons." loading="lazy" width="390" height="3086">
+            <figcaption><b>Discover, phone width</b><span>The current event-card system in the real product: posters, glass schedule pills, saved state and mobile-first reading order.</span></figcaption>
+          </figure>
         </div>
+      </div>
+      <div class="callout reveal" style="margin-top:2rem">
+        <p class="micro">What these do and do not prove</p>
+        <p>These captures were refreshed on 2026-08-05 against the current local seeded build. They prove that the current product has a real face and real screens. They do not prove a pilot, usage, institutional adoption or a fully green build, because the fresh verification results above say otherwise.</p>
       </div>
     </div>
   </section>
