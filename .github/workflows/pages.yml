@@ -1,6 +1,9 @@
-# Deploys site/ to GitHub Pages. Static content only: no build step.
-# Pages must be enabled once in the repository settings (Source: GitHub Actions)
-# by the repository owner; this workflow does not enable it itself.
+# Deploys the landing page to GitHub Pages. Static content only: no build step.
+#
+# Pages is enabled for this repository. The workflow assembles the published
+# artifact rather than uploading site/ directly, because assets/ is shared: the
+# README and the landing page reference the same files, and one copy checked in
+# at one path is better than two that drift.
 name: Deploy site to GitHub Pages
 
 on:
@@ -26,10 +29,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Upload site/ as the Pages artifact
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          cp -R site/. _site/
+          mkdir -p _site/assets
+          cp -R assets/. _site/assets/
+          ls -R _site | head -40
+
+      - name: Upload the assembled site as the Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

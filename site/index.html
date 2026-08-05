@@ -1,704 +1,1336 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" data-theme-pref="system">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WayClub · engineering showcase</title>
-<meta name="description" content="WayClub is the approval and event-operations layer that lets student clubs plan, get approved, and run events in one place, while allowing universities to govern the process with confidence. An engineering showcase, pre-pilot.">
-<meta property="og:title" content="WayClub · engineering showcase">
-<meta property="og:description" content="One connected event record, deny-by-default row-level security, a versioned approval workflow engine and a hash-chained audit log. Pre-pilot, honestly labelled.">
+<title>WayClub · a lit, governed home for student club events</title>
+<meta name="description" content="WayClub is the approval and event-operations layer that lets student clubs plan, get approved and run events in one place, while universities govern the process with confidence. Engineering showcase. Production deployed, still honest about its gaps.">
+<meta property="og:title" content="WayClub · a lit, governed home for student club events">
+<meta property="og:description" content="One durable event record, per-club colour derived in OKLCH, deny-by-default row-level security and a hash-chained audit log. Pilot stage, honestly labelled.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yeegz.github.io/WayClub-showcase/">
-<meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#10141C" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2211%22%20fill%3D%22%23325AC8%22%2F%3E%3Cpath%20d%3D%22M14%209%20H34%20A4.5%204.5%200%200%201%2038.5%2013.5%20V25%20C38.5%2031.6%2032.4%2035.9%2024%2039%20C15.6%2035.9%209.5%2031.6%209.5%2025%20V13.5%20A4.5%204.5%200%200%201%2014%209%20Z%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Cpath%20d%3D%22M16.2%2016.6%20L21%2028.2%20L24%2020.4%20L27%2028.2%20L31.8%2014.8%22%20fill%3D%22none%22%20stroke%3D%22%23325AC8%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<meta name="theme-color" content="#F8F6FF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#090811" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23A280FF'/%3E%3Cstop offset='1' stop-color='%235B34B8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='11' fill='url(%23f)'/%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='5.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18.4 14.4 H13.6 V33.6 H18.4'/%3E%3Cpath d='M29.6 14.4 H34.4 V33.6 H29.6'/%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='9.2' fill='%235EE7C4' opacity='0.2'/%3E%3Ccircle cx='24' cy='24' r='5.4' fill='%235EE7C4'/%3E%3C/svg%3E">
 <style>
-  /* ------------------------------------------------------------------
-     WayClub design tokens (values from packages/design-tokens dist).
-     Light is the default; dark follows the OS preference.
-     ------------------------------------------------------------------ */
-  :root {
-    color-scheme: light;
-    --wc-color-bg-canvas: #F7F8FA;
-    --wc-color-bg-surface: #FFFFFF;
-    --wc-color-bg-raised: #FFFFFF;
-    --wc-color-bg-sunken: #EFF1F5;
-    --wc-color-bg-warm: #FEF6EE;
-    --wc-color-text-primary: #1A1F29;
-    --wc-color-text-secondary: #3F4756;
-    --wc-color-text-muted: #4C5464;
-    --wc-color-border-subtle: #E2E5EC;
-    --wc-color-border-default: #CDD2DC;
-    --wc-brand-primary: #2E52C4;
-    --wc-brand-on-primary: #FFFFFF;
-    --wc-brand-primary-hover: #27439F;
-    --wc-brand-primary-pressed: #21377F;
-    --wc-color-action-primary-text: #2E52C4;
-    --wc-color-action-primary-subtle-bg: #EEF3FE;
-    --wc-color-action-primary-subtle-text: #27439F;
-    --wc-color-accent-text: #934413;
-    --wc-color-focus-ring: #2E52C4;
-    --wc-color-state-draft-bg: #EFF1F5;            --wc-color-state-draft-fg: #3F4756;            --wc-color-state-draft-border: #CDD2DC;
-    --wc-color-state-submitted-bg: #EDF6FC;        --wc-color-state-submitted-fg: #13537C;        --wc-color-state-submitted-border: #B0D6F0;
-    --wc-color-state-under-review-bg: #F3F0FC;     --wc-color-state-under-review-fg: #4A3889;     --wc-color-state-under-review-border: #CCC2F1;
-    --wc-color-state-revision-requested-bg: #FDF6E7; --wc-color-state-revision-requested-fg: #7C4A05; --wc-color-state-revision-requested-border: #F4D394;
-    --wc-color-state-approved-bg: #EDF9F0;         --wc-color-state-approved-fg: #196336;         --wc-color-state-approved-border: #ADE1C0;
-    --wc-color-state-rejected-bg: #FCF0EF;         --wc-color-state-rejected-fg: #8F2721;         --wc-color-state-rejected-border: #F2BAB4;
-    --wc-color-state-live-bg: #EBF8F5;             --wc-color-state-live-fg: #106051;             --wc-color-state-live-border: #A4DFD2;
-    --wc-color-state-completed-bg: #E2E5EC;        --wc-color-state-completed-fg: #2B3240;        --wc-color-state-completed-border: #9AA2B1;
-    --wc-color-state-cancelled-bg: #EFF1F5;        --wc-color-state-cancelled-fg: #4C5464;        --wc-color-state-cancelled-border: #CDD2DC;
-    --wc-color-state-expired-bg: #FDF6E7;          --wc-color-state-expired-fg: #613A06;          --wc-color-state-expired-border: #F4D394;
-    --wc-shadow-1: 0px 1px 2px 0px rgba(16, 20, 28, 0.06), 0px 1px 3px 0px rgba(16, 20, 28, 0.08);
-    --wc-shadow-2: 0px 2px 4px 0px rgba(16, 20, 28, 0.05), 0px 4px 12px 0px rgba(16, 20, 28, 0.10);
-    --wc-radius-md: 8px;
-    --wc-radius-lg: 12px;
-    --wc-radius-xl: 16px;
-    --wc-radius-pill: 9999px;
-    --wc-duration-base: 200ms;
-    --wc-duration-slow: 280ms;
-    --wc-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-    --wc-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    --wc-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-      --wc-color-bg-canvas: #10141C;
-      --wc-color-bg-surface: #1A1F29;
-      --wc-color-bg-raised: #232936;
-      --wc-color-bg-sunken: #0B0E14;
-      --wc-color-bg-warm: #241610;
-      --wc-color-text-primary: #F7F8FA;
-      --wc-color-text-secondary: #CDD2DC;
-      --wc-color-text-muted: #9AA2B1;
-      --wc-color-border-subtle: #2B3240;
-      --wc-color-border-default: #3F4756;
-      --wc-brand-primary: #6089E9;
-      --wc-brand-on-primary: #10141C;
-      --wc-brand-primary-hover: #8FADF3;
-      --wc-brand-primary-pressed: #B9CDFA;
-      --wc-color-action-primary-text: #8FADF3;
-      --wc-color-action-primary-subtle-bg: #1B2A4A;
-      --wc-color-action-primary-subtle-text: #B9CDFA;
-      --wc-color-accent-text: #F5B577;
-      --wc-color-focus-ring: #8FADF3;
-      --wc-color-state-draft-bg: #232936;            --wc-color-state-draft-fg: #CDD2DC;            --wc-color-state-draft-border: #4C5464;
-      --wc-color-state-submitted-bg: #0C344D;        --wc-color-state-submitted-fg: #B0D6F0;        --wc-color-state-submitted-border: #13537C;
-      --wc-color-state-under-review-bg: #2D2254;     --wc-color-state-under-review-fg: #CCC2F1;     --wc-color-state-under-review-border: #4A3889;
-      --wc-color-state-revision-requested-bg: #4C2E06; --wc-color-state-revision-requested-fg: #F4D394; --wc-color-state-revision-requested-border: #7C4A05;
-      --wc-color-state-approved-bg: #103D22;         --wc-color-state-approved-fg: #ADE1C0;         --wc-color-state-approved-border: #196336;
-      --wc-color-state-rejected-bg: #581915;         --wc-color-state-rejected-fg: #F2BAB4;         --wc-color-state-rejected-border: #8F2721;
-      --wc-color-state-live-bg: #0A3B32;             --wc-color-state-live-fg: #A4DFD2;             --wc-color-state-live-border: #106051;
-      --wc-color-state-completed-bg: #2B3240;        --wc-color-state-completed-fg: #E2E5EC;        --wc-color-state-completed-border: #626B7A;
-      --wc-color-state-cancelled-bg: #232936;        --wc-color-state-cancelled-fg: #9AA2B1;        --wc-color-state-cancelled-border: #4C5464;
-      --wc-color-state-expired-bg: #4C2E06;          --wc-color-state-expired-fg: #EBB55C;          --wc-color-state-expired-border: #7C4A05;
-      --wc-shadow-1: 0px 1px 2px 0px rgba(0, 0, 0, 0.55), 0px 1px 3px 0px rgba(0, 0, 0, 0.35);
-      --wc-shadow-2: 0px 2px 4px 0px rgba(0, 0, 0, 0.50), 0px 4px 12px 0px rgba(0, 0, 0, 0.40);
-    }
-  }
+/* ==========================================================================
+   WayClub showcase.
 
-  /* ---------- base ---------- */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+   Every colour below is a real value from packages/design-tokens/dist in the
+   private build repository, not an approximation drawn to match a screenshot.
+   Light and dark are two rooms in the same world rather than an inversion, so
+   both blocks are written out in full.
+
+   Self-contained by rule: no external stylesheet, script, font or image. The
+   font stack names Inter first because the product self-hosts it; a visitor
+   without it falls through to their own system face, which is why the stack
+   ends where it does.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --canvas: #F8F6FF;
+  --surface: #FFFFFF;
+  --raised: #FFFFFF;
+  --sunken: #F2EFFC;
+
+  --ink: #12101B;
+  --ink-2: #474458;
+  --ink-muted: #545166;
+
+  --brand: #7243D7;
+  --on-brand: #FFFFFF;
+  --brand-hover: #5B35B0;
+  --accent-text: #00725C;
+  --focus: #7243D7;
+
+  --divider: color-mix(in srgb, var(--ink) 8%, transparent);
+  --card-border: color-mix(in srgb, var(--ink) 10%, transparent);
+  --row-bg: color-mix(in srgb, var(--ink) 3%, transparent);
+  --row-border: color-mix(in srgb, var(--ink) 7%, transparent);
+
+  --ambient-tint: #BDA9FF;
+  --ambient-tint-strength: 0.09;
+  --ambient-accent: #5EE7C4;
+  --ambient-accent-strength: 0.07;
+  --ambient-start: #F8F6FF;
+  --ambient-mid: #FFFFFF;
+  --ambient-end: #F2EFFC;
+  --ambient-grid: color-mix(in srgb, var(--ink) 1.8%, transparent);
+
+  /* The owner drew this gradient as #a179ff to #6942d3. A white arrow on
+     #a179ff measures 2.40:1, so both stops moved one rung down their ramp
+     until the glyph cleared. These are the values that shipped. */
+  --gradient-action: linear-gradient(145deg, #8B5CF6, #5B35B0);
+
+  --ok-bg: #EFF7F1; --ok-fg: #036838; --ok-bd: #BDE0C7;
+  --review-bg: #F9F1FA; --review-fg: #6A3685; --review-bd: #E2C4EA;
+  --live-bg: #EDF7F7; --live-fg: #006164; --live-bd: #B5DDDF;
+  --warn-bg: #FDF4E4; --warn-fg: #6D4300; --warn-bd: #F0DCB4;
+
+  --shadow-card:
+    0 1px 2px rgba(9,8,17,.05),
+    0 8px 20px rgba(9,8,17,.06),
+    0 24px 48px rgba(9,8,17,.05);
+  --shadow-card-hover:
+    0 2px 4px rgba(9,8,17,.07),
+    0 14px 30px rgba(9,8,17,.10),
+    0 34px 64px rgba(114,67,215,.12);
+  --shadow-glass: 0 13px 28px rgba(9,8,17,.14), inset 0 1px 0 rgba(255,255,255,.55);
+
+  --glass-fill: rgba(255,255,255,.72);
+  --glass-border: rgba(18,16,27,.10);
+  --glass-ink: #12101B;
+
+  --radius-card: 30px;
+  --radius-card-narrow: 25px;
+  --radius-row: 17px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  --ease-standard: cubic-bezier(.4,0,.2,1);
+  --ease-lift: cubic-bezier(.2,.8,.2,1);
+  --t-fast: .2s;
+  --t-base: .3s;
+  --t-lift: .38s;
+
+  --font-sans: Inter, "Noto Sans Arabic", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --shell: 1160px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --canvas: #090811;
+  --surface: #12101B;
+  --raised: #1A1725;
+  --sunken: #05040A;
+
+  --ink: #F8F6FF;
+  --ink-2: #AAA6BD;
+  --ink-muted: #938FA5;
+
+  --brand: #A280FF;
+  --on-brand: #090811;
+  --brand-hover: #BDA9FF;
+  --accent-text: #5EE7C4;
+  --focus: #BDA9FF;
+
+  --divider: rgba(255,255,255,.08);
+  --card-border: rgba(255,255,255,.10);
+  --row-bg: rgba(255,255,255,.03);
+  --row-border: rgba(255,255,255,.07);
+
+  --ambient-tint: #5B35B0;
+  --ambient-tint-strength: 0.14;
+  --ambient-accent: #00CDA8;
+  --ambient-accent-strength: 0.07;
+  --ambient-start: #090811;
+  --ambient-mid: #0D0B17;
+  --ambient-end: #08070E;
+  --ambient-grid: rgba(255,255,255,.018);
+
+  --ok-bg: #023D1E; --ok-fg: #BDE0C7; --ok-bd: #036838;
+  --review-bg: #412154; --review-fg: #E2C4EA; --review-bd: #6A3685;
+  --live-bg: #003A3C; --live-fg: #B5DDDF; --live-bd: #006164;
+  --warn-bg: #492900; --warn-fg: #F0DCB4; --warn-bd: #825200;
+
+  --shadow-card:
+    0 30px 80px rgba(0,0,0,.50),
+    0 10px 24px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  --shadow-card-hover:
+    0 38px 96px rgba(0,0,0,.57),
+    0 15px 38px rgba(71,40,135,.24),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  --shadow-glass: 0 13px 28px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.055);
+
+  --glass-fill: rgba(12,9,25,.52);
+  --glass-border: rgba(255,255,255,.13);
+  --glass-ink: #F8F6FF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #090811; --surface: #12101B; --raised: #1A1725; --sunken: #05040A;
+    --ink: #F8F6FF; --ink-2: #AAA6BD; --ink-muted: #938FA5;
+    --brand: #A280FF; --on-brand: #090811; --brand-hover: #BDA9FF;
+    --accent-text: #5EE7C4; --focus: #BDA9FF;
+    --divider: rgba(255,255,255,.08);
+    --card-border: rgba(255,255,255,.10);
+    --row-bg: rgba(255,255,255,.03);
+    --row-border: rgba(255,255,255,.07);
+    --ambient-tint: #5B35B0; --ambient-tint-strength: 0.14;
+    --ambient-accent: #00CDA8; --ambient-accent-strength: 0.07;
+    --ambient-start: #090811; --ambient-mid: #0D0B17; --ambient-end: #08070E;
+    --ambient-grid: rgba(255,255,255,.018);
+    --ok-bg: #023D1E; --ok-fg: #BDE0C7; --ok-bd: #036838;
+    --review-bg: #412154; --review-fg: #E2C4EA; --review-bd: #6A3685;
+    --live-bg: #003A3C; --live-fg: #B5DDDF; --live-bd: #006164;
+    --warn-bg: #492900; --warn-fg: #F0DCB4; --warn-bd: #825200;
+    --shadow-card: 0 30px 80px rgba(0,0,0,.50), 0 10px 24px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.04);
+    --shadow-card-hover: 0 38px 96px rgba(0,0,0,.57), 0 15px 38px rgba(71,40,135,.24), inset 0 1px 0 rgba(255,255,255,.04);
+    --shadow-glass: 0 13px 28px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.055);
+    --glass-fill: rgba(12,9,25,.52);
+    --glass-border: rgba(255,255,255,.13);
+    --glass-ink: #F8F6FF;
+  }
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, p, figure, ul, ol, dl, dd, blockquote { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img, svg { display: block; max-width: 100%; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background-color: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* The lit page. Violet radial from the upper left, emerald from the lower
+   right, over the product's own gradient stops, with a faint 42px grid masked
+   away at the top and bottom. Fixed rather than scrolling, so it behaves as
+   light in a room instead of wallpaper on a wall. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+body::before {
+  background:
+    radial-gradient(circle at 18% 18%,
+      color-mix(in srgb, var(--ambient-tint) calc(var(--ambient-tint-strength) * 100%), transparent),
+      transparent 32%),
+    radial-gradient(circle at 82% 80%,
+      color-mix(in srgb, var(--ambient-accent) calc(var(--ambient-accent-strength) * 100%), transparent),
+      transparent 27%),
+    linear-gradient(135deg, var(--ambient-start), var(--ambient-mid) 52%, var(--ambient-end));
+}
+body::after {
+  background-image:
+    linear-gradient(to right, var(--ambient-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ambient-grid) 1px, transparent 1px);
+  background-size: 42px 42px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+a { color: var(--brand); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--brand-hover); }
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: .86em;
+  background: var(--row-bg);
+  border: 1px solid var(--row-border);
+  border-radius: 6px;
+  padding: .08em .38em;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--surface);
+  color: var(--ink);
+  padding: .75rem 1.25rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0 0 var(--radius-md) 0;
+  z-index: 100;
+}
+.skip-link:focus { left: 0; }
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2.5rem);
+}
+
+/* ---------- type ---------- */
+h1, h2, h3 { line-height: 1.15; letter-spacing: -.02em; font-weight: 700; }
+
+.display {
+  font-size: clamp(2.1rem, 6.4vw, 3.75rem);
+  line-height: 1.06;
+  letter-spacing: -.03em;
+  font-weight: 720;
+  text-wrap: balance;
+}
+h2 { font-size: clamp(1.55rem, 3.6vw, 2.35rem); text-wrap: balance; }
+h3 { font-size: 1.06rem; letter-spacing: -.012em; }
+
+.lead {
+  font-size: clamp(1.02rem, 2.1vw, 1.19rem);
+  color: var(--ink-2);
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+p { text-wrap: pretty; }
+p + p { margin-top: .85rem; }
+
+.micro {
+  text-transform: uppercase;
+  font-size: .64rem;
+  font-weight: 620;
+  letter-spacing: .055em;
+  color: var(--ink-muted);
+}
+
+.muted { color: var(--ink-2); }
+.small { font-size: .92rem; }
+
+/* ---------- header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--canvas) 86%, transparent);
+  border-bottom: 1px solid var(--divider);
+}
+@supports (backdrop-filter: blur(1px)) {
+  /* Blur is rationed in this product: it is permitted on things floating over
+     other content, and nowhere else. A sticky bar qualifies; a panel of body
+     text does not. */
+  .site-header { backdrop-filter: saturate(1.4) blur(14px); }
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 62px;
+}
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  font-weight: 640;
+  font-size: 1.06rem;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+.lockup:hover { color: var(--ink); }
+.lockup .quiet { font-weight: 520; color: var(--ink-2); }
+.lockup svg { color: var(--brand); }
+
+.site-nav { margin-left: auto; display: flex; align-items: center; gap: .15rem; }
+.site-nav a {
+  display: inline-block;
+  padding: .5rem .7rem;
+  border-radius: var(--radius-md);
+  font-size: .9rem;
+  font-weight: 520;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color var(--t-fast) var(--ease-standard), background-color var(--t-fast) var(--ease-standard);
+}
+.site-nav a:hover { color: var(--ink); background: var(--row-bg); }
+@media (max-width: 860px) { .site-nav .opt { display: none; } }
+@media (max-width: 700px) { .site-nav .opt2 { display: none; } }
+/* Below this the anchor nav cannot fit beside the lockup without pushing the
+   page sideways, and a page that scrolls sideways is a worse failure than a
+   missing shortcut. The document is linear and the skip link still works. */
+@media (max-width: 600px) { .site-nav { display: none; } .theme-toggle { margin-left: auto; } }
+
+.theme-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--card-border);
+  background: var(--row-bg);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: color var(--t-fast) var(--ease-standard), border-color var(--t-fast) var(--ease-standard);
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--brand); }
+.theme-toggle .sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .moon { display: none; }
+}
+
+/* ---------- sections ---------- */
+section { padding: clamp(3.5rem, 8vw, 6.5rem) 0; }
+section + section { border-top: 1px solid var(--divider); }
+.section-head { max-width: 66ch; margin-bottom: clamp(1.75rem, 4vw, 2.75rem); }
+.section-head p { margin-top: .85rem; }
+
+/* ---------- hero ---------- */
+.hero { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(3rem, 7vw, 5rem); }
+.hero .display { margin-bottom: 1.4rem; }
+.hero .display .quiet { color: var(--ink-2); font-weight: 620; }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .4rem .85rem .4rem .6rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--warn-bd);
+  background: color-mix(in srgb, var(--warn-bg) 55%, transparent);
+  color: var(--warn-fg);
+  font-size: .8rem;
+  font-weight: 560;
+  margin-bottom: 1.5rem;
+}
+.status-pill .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor; flex: 0 0 auto;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 2rem; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  padding: .6rem 1.15rem;
+  border-radius: var(--radius-pill);
+  font-size: .95rem;
+  font-weight: 570;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform var(--t-base) var(--ease-lift), box-shadow var(--t-base) var(--ease-lift), background-color var(--t-fast) var(--ease-standard), border-color var(--t-fast) var(--ease-standard);
+}
+.btn-primary {
+  background: var(--gradient-action);
+  color: #FFFFFF;
+  box-shadow: 0 10px 23px rgba(103,65,209,.35), inset 0 1px 0 rgba(255,255,255,.30);
+}
+.btn-quiet {
+  background: var(--surface);
+  border-color: var(--card-border);
+  color: var(--ink);
+}
+.btn-quiet:hover { color: var(--ink); border-color: var(--brand); }
+@media (hover: hover) {
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(103,65,209,.42), inset 0 1px 0 rgba(255,255,255,.30); }
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  background: var(--divider);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.figures div { background: var(--surface); padding: 1.05rem 1.15rem; }
+.figures dt { font-size: .75rem; color: var(--ink-muted); font-weight: 560; }
+.figures dd { margin: .2rem 0 0; font-size: 1.5rem; font-weight: 680; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+
+/* ---------- cards ---------- */
+.grid { display: grid; gap: 1.1rem; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 215px), 1fr)); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+}
+.card h3 { margin-bottom: .5rem; }
+.card p { color: var(--ink-2); font-size: .94rem; }
+.card .micro { margin-bottom: .7rem; }
+
+.rule-list li {
+  padding: 1.05rem 0;
+  border-top: 1px solid var(--divider);
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: .35rem 2rem;
+  align-items: baseline;
+}
+.rule-list li:last-child { border-bottom: 1px solid var(--divider); }
+.rule-list b { font-weight: 620; letter-spacing: -.012em; }
+.rule-list span { color: var(--ink-2); font-size: .96rem; }
+@media (max-width: 720px) { .rule-list li { grid-template-columns: 1fr; } }
+
+/* ---------- the event card, rebuilt from the product's own tokens ---------- */
+.card-demo {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+@media (max-width: 860px) { .card-demo { grid-template-columns: 1fr; } }
+
+.event-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--card-border);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform var(--t-lift) var(--ease-lift), box-shadow var(--t-lift) var(--ease-lift), border-color var(--t-lift) var(--ease-lift);
+}
+@media (hover: hover) {
+  .event-card:hover {
+    transform: translateY(-7px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: color-mix(in srgb, #A280FF 29%, transparent);
+  }
+}
+@media (max-width: 400px) { .event-card { border-radius: var(--radius-card-narrow); } }
+
+/* The hero, with no artwork: deep indigo to ultraviolet, a faint perspective
+   grid, a beam, an orb and the waypoint emblem. Drawn from CSS alone, because
+   in the product a card without a poster must still look designed. */
+.event-hero {
+  position: relative;
+  aspect-ratio: 420 / 224;
+  background:
+    radial-gradient(120% 90% at 50% 118%, rgba(94,231,196,.16), transparent 55%),
+    radial-gradient(90% 80% at 22% 12%, rgba(162,128,255,.34), transparent 60%),
+    linear-gradient(158deg, #2A1D63, #150E38 55%, #0E0A24);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.event-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 70%);
+  mask-image: linear-gradient(to top, #000, transparent 70%);
+}
+.event-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 42%, rgba(18,16,27,.55) 88%, var(--surface));
+}
+.emblem { position: relative; z-index: 1; opacity: .92; }
+
+.save-chip {
+  position: absolute;
+  top: 14px; right: 14px;
+  z-index: 2;
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-pill);
+  background: rgba(12,9,25,.52);
+  border: 1px solid rgba(255,255,255,.13);
+  color: #F8F6FF;
+}
+@supports (backdrop-filter: blur(1px)) { .save-chip { backdrop-filter: blur(14px); } }
+
+.schedule-pill {
+  position: absolute;
+  left: 24px;
+  bottom: -19px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .55rem .95rem;
+  border-radius: var(--radius-pill);
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-border);
+  color: var(--glass-ink);
+  box-shadow: var(--shadow-glass);
+  font-size: .82rem;
+  font-weight: 560;
+  white-space: nowrap;
+}
+@supports (backdrop-filter: blur(1px)) { .schedule-pill { backdrop-filter: blur(18px); } }
+.schedule-pill .sep { width: 1px; height: 15px; background: currentColor; opacity: .25; }
+.schedule-pill span { display: inline-flex; align-items: center; gap: .35rem; }
+@media (max-width: 400px) {
+  .schedule-pill { left: 18px; gap: .5rem; padding: .5rem .75rem; }
+}
+
+.event-body { position: relative; padding: 2.1rem 24px 1.35rem; }
+@media (max-width: 400px) { .event-body { padding-left: 18px; padding-right: 18px; } }
+.event-title {
+  font-size: clamp(1.28rem, 4.6vw, 1.55rem);
+  line-height: 1.2;
+  letter-spacing: -.024em;
+  font-weight: 710;
+  margin-bottom: .9rem;
+}
+.event-title .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-text);
+  margin-right: .45rem;
+  vertical-align: middle;
+}
+.host-row {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .6rem .7rem;
+  border-radius: var(--radius-row);
+  background: var(--row-bg);
+  border: 1px solid var(--row-border);
+}
+.host-logo {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  flex: 0 0 auto;
+  display: grid; place-items: center;
+  background: linear-gradient(150deg, #2E7BE0, #123C8A);
+  color: #fff;
+  font-weight: 700;
+  font-size: .95rem;
+}
+.event-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.05rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid var(--divider);
+}
+.venue { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+.venue-icon {
+  width: 34px; height: 34px;
+  border-radius: 11px;
+  flex: 0 0 auto;
+  display: grid; place-items: center;
+  background: var(--row-bg);
+  border: 1px solid var(--row-border);
+  color: var(--ink-2);
+}
+.venue-text { min-width: 0; }
+.venue-text b { display: block; font-weight: 570; font-size: .93rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arrow-btn {
+  flex: 0 0 auto;
+  width: 44px; height: 44px;
+  border-radius: 15px;
+  display: grid; place-items: center;
+  background: var(--gradient-action);
+  color: #fff;
+  border: none;
+  box-shadow: 0 10px 23px rgba(103,65,209,.35), inset 0 1px 0 rgba(255,255,255,.30);
+}
+
+.anatomy li {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: .1rem .8rem;
+  padding: .7rem 0;
+  border-bottom: 1px solid var(--divider);
+  font-size: .95rem;
+}
+.anatomy li:first-child { border-top: 1px solid var(--divider); }
+.anatomy .n { grid-column: 1; grid-row: 1; color: var(--brand); font-weight: 660; font-variant-numeric: tabular-nums; }
+.anatomy b { grid-column: 2; grid-row: 1; font-weight: 610; }
+.anatomy .d { grid-column: 2; grid-row: 2; color: var(--ink-2); font-size: .9rem; }
+
+/* ---------- swatches ---------- */
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: .8rem; }
+.swatch {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+}
+.swatch .chip { height: 62px; }
+.swatch .meta { padding: .6rem .7rem; }
+.swatch b { display: block; font-size: .84rem; font-weight: 580; }
+.swatch code { background: none; border: none; padding: 0; font-size: .76rem; color: var(--ink-muted); }
+
+.poster-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 1.1rem; }
+.poster-demo {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.3rem;
+  color: #F8F6FF;
+}
+.poster-demo b { font-weight: 620; }
+.poster-demo p { color: rgba(248,246,255,.78); font-size: .9rem; margin-top: .3rem; }
+.poster-demo .micro { color: rgba(248,246,255,.62); }
+
+/* ---------- status columns ---------- */
+.status-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 1.1rem; }
+.status-col { border: 1px solid var(--card-border); border-radius: var(--radius-lg); background: var(--surface); padding: 1.4rem; }
+.status-col h3 { display: flex; align-items: center; gap: .5rem; margin-bottom: .9rem; }
+.tag {
+  display: inline-flex; align-items: center;
+  padding: .12rem .5rem;
+  border-radius: var(--radius-pill);
+  font-size: .68rem; font-weight: 620; letter-spacing: .03em; text-transform: uppercase;
+  border: 1px solid;
+}
+.tag-built { background: var(--ok-bg); color: var(--ok-fg); border-color: var(--ok-bd); }
+.tag-partial { background: var(--warn-bg); color: var(--warn-fg); border-color: var(--warn-bd); }
+.tag-none { background: var(--review-bg); color: var(--review-fg); border-color: var(--review-bd); }
+.status-col li {
+  padding: .5rem 0 .5rem 1.1rem;
+  position: relative;
+  font-size: .93rem;
+  color: var(--ink-2);
+  border-top: 1px solid var(--divider);
+}
+.status-col li:first-of-type { border-top: none; }
+.status-col li::before,
+.dot-list li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 1.02em;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--ink-muted);
+}
+.dot-list li {
+  padding: .5rem 0 .5rem 1.1rem;
+  position: relative;
+  font-size: .93rem;
+  color: var(--ink-2);
+  border-top: 1px solid var(--divider);
+}
+.dot-list li:first-child { border-top: none; }
+
+/* ---------- screens ---------- */
+figure.shot {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+figure.shot img {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid var(--divider);
+  background: var(--sunken);
+}
+figure.shot figcaption { padding: .95rem 1.1rem; font-size: .92rem; color: var(--ink-2); }
+figure.shot figcaption b { color: var(--ink); font-weight: 620; }
+.shot-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1.1rem; }
+.shot-mobile { max-width: 300px; }
+
+/* ---------- dives ---------- */
+.dive {
+  display: block;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 1.35rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--t-lift) var(--ease-lift), box-shadow var(--t-lift) var(--ease-lift), border-color var(--t-lift) var(--ease-lift);
+}
+@media (hover: hover) {
+  .dive:hover { transform: translateY(-5px); box-shadow: var(--shadow-card-hover); border-color: color-mix(in srgb, var(--brand) 42%, transparent); }
+}
+.dive h3 { color: var(--ink); margin-bottom: .4rem; }
+.dive p { color: var(--ink-2); font-size: .92rem; }
+.dive .go { display: inline-flex; align-items: center; gap: .3rem; margin-top: .85rem; color: var(--brand); font-size: .9rem; font-weight: 570; }
+
+/* ---------- callout ---------- */
+.callout {
+  border: 1px solid var(--card-border);
+  border-left: 3px solid var(--brand);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 1.35rem 1.5rem;
+}
+.callout .micro { margin-bottom: .55rem; }
+
+/* ---------- footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--divider);
+  padding: 2.5rem 0 3.5rem;
+  color: var(--ink-2);
+  font-size: .92rem;
+}
+.site-footer a { font-weight: 540; }
+.footer-row { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; align-items: center; }
+
+/* ---------- motion ---------- */
+.reveal { opacity: 0; transform: translateY(14px); }
+.reveal.in { opacity: 1; transform: none; transition: opacity .6s var(--ease-standard), transform .6s var(--ease-lift); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal, .reveal.in { opacity: 1; transform: none; }
+  .event-card:hover, .btn-primary:hover, .dive:hover { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--wc-font-sans);
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--wc-color-text-primary);
-    background: var(--wc-color-bg-canvas);
-    -webkit-font-smoothing: antialiased;
-  }
-  :focus-visible {
-    outline: 2px solid var(--wc-color-focus-ring);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-  a { color: var(--wc-color-action-primary-text); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  code, .mono { font-family: var(--wc-font-mono); font-size: 0.85em; }
-
-  .skip-link {
-    position: absolute; left: -9999px; top: 0;
-    background: var(--wc-color-bg-surface); color: var(--wc-color-text-primary);
-    padding: 12px 20px; border-radius: var(--wc-radius-md); z-index: 100;
-    border: 1px solid var(--wc-color-border-default);
-  }
-  .skip-link:focus { left: 16px; top: 16px; }
-
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-
-  /* ---------- header ---------- */
-  header.site {
-    border-bottom: 1px solid var(--wc-color-border-subtle);
-    background: color-mix(in srgb, var(--wc-color-bg-canvas) 88%, transparent);
-    backdrop-filter: blur(8px);
-    position: sticky; top: 0; z-index: 20;
-  }
-  .site-inner { display: flex; align-items: center; gap: 24px; height: 60px; }
-  .wordmark { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.05rem; color: var(--wc-color-text-primary); }
-  .wordmark:hover { text-decoration: none; }
-  /* The route mark, inlined so it inherits ink and works in both themes from
-     one file. It carries the brand colour; the name carries text colour. */
-  .mark { width: 26px; height: 26px; flex: none; color: var(--wc-brand-primary); }
-  nav.primary { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
-  nav.primary a {
-    color: var(--wc-color-text-secondary); font-size: 0.875rem; font-weight: 500;
-    padding: 8px 12px; border-radius: var(--wc-radius-md);
-  }
-  nav.primary a:hover { background: var(--wc-color-bg-sunken); text-decoration: none; color: var(--wc-color-text-primary); }
-  @media (max-width: 700px) { nav.primary a.hide-sm { display: none; } }
-
-  /* ---------- shared section styling ---------- */
-  section { padding: 72px 0; }
-  section + section { border-top: 1px solid var(--wc-color-border-subtle); }
-  .kicker {
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-    color: var(--wc-color-action-primary-text); margin-bottom: 12px;
-  }
-  h1, h2, h3 { font-weight: 600; letter-spacing: -0.015em; }
-  h2 { font-size: 1.875rem; line-height: 2.375rem; margin-bottom: 16px; }
-  h3 { font-size: 1.25rem; line-height: 1.75rem; margin-bottom: 8px; }
-  .lede { font-size: 1.125rem; line-height: 1.75rem; color: var(--wc-color-text-secondary); max-width: 46em; }
-  p + p { margin-top: 12px; }
-
-  .card {
-    background: var(--wc-color-bg-surface);
-    border: 1px solid var(--wc-color-border-subtle);
-    border-radius: var(--wc-radius-lg);
-    padding: 24px;
-    box-shadow: var(--wc-shadow-1);
-  }
-
-  /* ---------- hero ---------- */
-  .hero { padding: 96px 0 80px; }
-  .honesty-tag {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-    color: var(--wc-color-action-primary-subtle-text);
-    background: var(--wc-color-action-primary-subtle-bg);
-    border: 1px solid var(--wc-color-border-subtle);
-    border-radius: var(--wc-radius-pill);
-    padding: 6px 14px; margin-bottom: 24px;
-  }
-  .honesty-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--wc-brand-primary); flex: none; }
-  h1.display {
-    font-size: clamp(2.25rem, 5.5vw, 3.4rem);
-    line-height: 1.12;
-    letter-spacing: -0.02em;
-    max-width: 17em;
-    margin-bottom: 20px;
-  }
-  h1.display .quiet { color: var(--wc-color-text-muted); }
-  .hero .lede { margin-bottom: 32px; }
-  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    height: 44px; padding: 0 22px; border-radius: var(--wc-radius-md);
-    font-size: 0.9375rem; font-weight: 600; border: 1px solid transparent;
-    cursor: pointer; transition: background var(--wc-duration-base) var(--wc-ease-standard);
-  }
-  .btn-primary { background: var(--wc-brand-primary); color: var(--wc-brand-on-primary); }
-  .btn-primary:hover { background: var(--wc-brand-primary-hover); text-decoration: none; }
-  .btn-primary:active { background: var(--wc-brand-primary-pressed); }
-  .btn-quiet { color: var(--wc-color-text-secondary); border-color: var(--wc-color-border-default); background: var(--wc-color-bg-surface); }
-  .btn-quiet:hover { background: var(--wc-color-bg-sunken); text-decoration: none; }
-  .hero-note { margin-top: 28px; font-size: 0.875rem; color: var(--wc-color-text-muted); max-width: 44em; }
-
-  /* ---------- stat strip ---------- */
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 48px; }
-  .stat { background: var(--wc-color-bg-surface); border: 1px solid var(--wc-color-border-subtle); border-radius: var(--wc-radius-lg); padding: 16px 18px; }
-  .stat b { display: block; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
-  .stat span { font-size: 0.8125rem; color: var(--wc-color-text-muted); }
-  .stats-caption { margin-top: 10px; font-size: 0.8125rem; color: var(--wc-color-text-muted); }
-
-  /* ---------- chips ---------- */
-  .chip {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 5px 13px; border-radius: var(--wc-radius-pill);
-    font-size: 0.875rem; font-weight: 600; white-space: nowrap;
-    border: 1px solid;
-  }
-  .chip .glyph { font-size: 0.75rem; line-height: 1; }
-  .chip-draft { background: var(--wc-color-state-draft-bg); color: var(--wc-color-state-draft-fg); border-color: var(--wc-color-state-draft-border); }
-  .chip-submitted { background: var(--wc-color-state-submitted-bg); color: var(--wc-color-state-submitted-fg); border-color: var(--wc-color-state-submitted-border); }
-  .chip-under-review { background: var(--wc-color-state-under-review-bg); color: var(--wc-color-state-under-review-fg); border-color: var(--wc-color-state-under-review-border); }
-  .chip-revision { background: var(--wc-color-state-revision-requested-bg); color: var(--wc-color-state-revision-requested-fg); border-color: var(--wc-color-state-revision-requested-border); }
-  .chip-approved { background: var(--wc-color-state-approved-bg); color: var(--wc-color-state-approved-fg); border-color: var(--wc-color-state-approved-border); }
-  .chip-rejected { background: var(--wc-color-state-rejected-bg); color: var(--wc-color-state-rejected-fg); border-color: var(--wc-color-state-rejected-border); }
-  .chip-live { background: var(--wc-color-state-live-bg); color: var(--wc-color-state-live-fg); border-color: var(--wc-color-state-live-border); }
-  .chip-completed { background: var(--wc-color-state-completed-bg); color: var(--wc-color-state-completed-fg); border-color: var(--wc-color-state-completed-border); }
-  .chip-cancelled { background: var(--wc-color-state-cancelled-bg); color: var(--wc-color-state-cancelled-fg); border-color: var(--wc-color-state-cancelled-border); }
-  .chip-expired { background: var(--wc-color-state-expired-bg); color: var(--wc-color-state-expired-fg); border-color: var(--wc-color-state-expired-border); }
-
-  /* ---------- one record flow ---------- */
-  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; margin-top: 40px; }
-  .flow-step { flex: 1 1 180px; min-width: 180px; position: relative; padding: 20px 22px 20px 22px; }
-  .flow-step + .flow-step { border-left: 1px dashed var(--wc-color-border-default); }
-  .flow-step .chip { margin-bottom: 12px; }
-  .flow-step h3 { font-size: 1rem; margin-bottom: 6px; }
-  .flow-step p { font-size: 0.875rem; color: var(--wc-color-text-muted); }
-  .flow-card { background: var(--wc-color-bg-surface); border: 1px solid var(--wc-color-border-subtle); border-radius: var(--wc-radius-xl); box-shadow: var(--wc-shadow-1); overflow: hidden; }
-  .flow-footer { border-top: 1px solid var(--wc-color-border-subtle); padding: 14px 22px; font-size: 0.875rem; color: var(--wc-color-text-secondary); background: var(--wc-color-bg-sunken); }
-
-  /* ---------- workflow ---------- */
-  .rail { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 32px 0 10px; }
-  .rail .arrow { color: var(--wc-color-text-muted); font-size: 0.8rem; user-select: none; }
-  .rail-note { font-size: 0.8125rem; color: var(--wc-color-text-muted); margin-bottom: 32px; }
-  .routes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }
-  .route h3 { display: flex; align-items: baseline; gap: 8px; }
-  .route h3 code { font-size: 0.8rem; color: var(--wc-color-text-muted); font-weight: 400; }
-  .route ol { margin: 12px 0 10px 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
-  .route li { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--wc-color-text-secondary); }
-  .route li .step {
-    flex: none; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--wc-color-action-primary-subtle-bg); color: var(--wc-color-action-primary-subtle-text);
-    display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600;
-  }
-  .route p.cond { font-size: 0.8125rem; color: var(--wc-color-text-muted); }
-  .wf-props { margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-  .wf-props .card h3 { font-size: 1rem; }
-  .wf-props .card p { font-size: 0.875rem; color: var(--wc-color-text-secondary); }
-
-  /* ---------- security ---------- */
-  .sec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 36px; }
-  .sec-grid .card p { font-size: 0.9rem; color: var(--wc-color-text-secondary); }
-  .codeblock {
-    background: var(--wc-color-bg-sunken);
-    border: 1px solid var(--wc-color-border-subtle);
-    border-radius: var(--wc-radius-md);
-    padding: 14px 16px; margin-top: 14px;
-    font-family: var(--wc-font-mono); font-size: 0.78rem; line-height: 1.6;
-    color: var(--wc-color-text-secondary);
-    overflow-x: auto; white-space: pre;
-  }
-  .codeblock .hl { color: var(--wc-color-action-primary-text); }
-
-  /* ---------- design system ---------- */
-  .palette { display: flex; flex-wrap: wrap; gap: 10px; margin: 32px 0 14px; }
-  .palette-note { font-size: 0.8125rem; color: var(--wc-color-text-muted); margin-bottom: 28px; }
-  .ds-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-  .ds-facts .card p { font-size: 0.875rem; color: var(--wc-color-text-secondary); }
-  .focus-demo {
-    display: inline-flex; margin-top: 12px;
-    outline: 2px solid var(--wc-color-focus-ring); outline-offset: 2px; border-radius: var(--wc-radius-md);
-  }
-
-  /* ---------- screens gallery ---------- */
-  .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 24px; margin-top: 36px; }
-  .shot {
-    border: 1px solid var(--wc-color-border-subtle);
-    border-radius: var(--wc-radius-lg);
-    background: var(--wc-color-bg-surface);
-    overflow: hidden;
-  }
-  .shot img {
-    display: block; width: 100%; height: auto;
-    border-bottom: 1px solid var(--wc-color-border-subtle);
-  }
-  /* Light shots by default; dark shots swap in for dark viewers. */
-  .shot img.dark { display: none; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .shot img.light { display: none; }
-    :root:not([data-theme="light"]) .shot img.dark { display: block; }
-  }
-  .shot figcaption { padding: 14px 18px 18px; }
-  .shot figcaption strong { display: block; font-size: 0.9375rem; margin-bottom: 4px; }
-  .shot figcaption span { font-size: 0.8125rem; color: var(--wc-color-text-muted); }
-  .screens-note { margin-top: 28px; font-size: 0.875rem; color: var(--wc-color-text-muted); max-width: 46em; }
-
-  /* ---------- stack strip ---------- */
-  .stack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-  .stack span {
-    font-size: 0.875rem; font-weight: 500; color: var(--wc-color-text-secondary);
-    background: var(--wc-color-bg-surface); border: 1px solid var(--wc-color-border-subtle);
-    border-radius: var(--wc-radius-pill); padding: 7px 16px;
-  }
-
-  /* ---------- footer ---------- */
-  footer.site {
-    border-top: 1px solid var(--wc-color-border-subtle);
-    padding: 40px 0 56px; font-size: 0.875rem; color: var(--wc-color-text-muted);
-  }
-  .foot-inner { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: baseline; justify-content: space-between; }
-  .foot-links { display: flex; gap: 20px; flex-wrap: wrap; }
-
-  /* ---------- reveal (IntersectionObserver + setTimeout; no rAF loops) ---------- */
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--wc-duration-slow) var(--wc-ease-standard), transform var(--wc-duration-slow) var(--wc-ease-standard); }
-    .reveal.in { opacity: 1; transform: none; }
-  }
+}
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
 
-<header class="site">
-  <div class="wrap site-inner">
-    <a class="wordmark" href="#top" aria-label="WayClub, back to top"><svg class="mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" focusable="false"><path d="M4 7 L10.6 25 L16 12.6 L21.4 25 L28 3.5" fill="none" stroke="currentColor" stroke-width="3.9" stroke-linecap="round" stroke-linejoin="round"/></svg>WayClub</a>
-    <nav class="primary" aria-label="Sections">
-      <a href="#record" class="hide-sm">One record</a>
-      <a href="#workflow" class="hide-sm">Workflow</a>
-      <a href="#security" class="hide-sm">Security</a>
-      <a href="#design" class="hide-sm">Design</a>
-      <a href="https://github.com/yeegz/WayClub-showcase">GitHub</a>
+<header class="site-header">
+  <div class="shell header-row">
+    <a class="lockup" href="#top">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11.4 8.6 H8.1 V23.4 H11.4"/>
+          <path d="M20.6 8.6 H23.9 V23.4 H20.6"/>
+        </g>
+        <circle cx="16" cy="16" r="4.1" fill="var(--accent-text)"/>
+      </svg>
+      Way<span class="quiet">Club</span>
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#product">Product</a>
+      <a href="#identity">Identity</a>
+      <a class="opt2" href="#security">Security</a>
+      <a class="opt" href="#screens">Screens</a>
+      <a href="#status">Status</a>
+      <a class="opt" href="#dives">Deep dives</a>
     </nav>
+    <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Switch between the light and dark theme">
+      <svg class="moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.7 6.7 0 0 0 10.5 10.5Z"/></svg>
+      <svg class="sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M4.4 4.4l1.4 1.4M18.2 18.2l1.4 1.4M2.5 12h2M19.5 12h2M4.4 19.6l1.4-1.4M18.2 5.8l1.4-1.4"/></svg>
+    </button>
   </div>
 </header>
 
 <main id="main">
-
-  <!-- ============================== HERO ============================== -->
+  <!-- HERO -->
   <section class="hero" id="top" aria-labelledby="hero-h">
-    <div class="wrap">
-      <p class="honesty-tag"><span class="dot"></span>Engineering showcase · pre-pilot</p>
-      <h1 class="display" id="hero-h">Student clubs plan, get approved and run events in one place. <span class="quiet">Universities govern it with confidence.</span></h1>
-      <p class="lede">WayClub is the approval and event-operations layer for student organisations: one durable event record carrying a proposal through conditional multi-stage approval, registration, attendance and a verified involvement record, on a deny-by-default multi-tenant Postgres core.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/yeegz/WayClub-showcase#deep-dives">Read the engineering deep dives</a>
-        <a class="btn btn-quiet" href="#security">The security story</a>
+    <div class="shell">
+      <p class="status-pill"><span class="dot" aria-hidden="true"></span>Production deployed. Still a pilot-stage product.</p>
+      <h1 class="display" id="hero-h">A lit, governed home for everything a student club runs. <span class="quiet">One event record, from the first draft to the record a student keeps.</span></h1>
+      <p class="lead">WayClub is the approval and event-operations layer that lets student clubs plan, get approved and run events in one place, while universities govern the process with confidence. This is its public engineering showcase: the build repository is private, and every number here was read from that code, that database catalogue or a test run. The live product currently serves from Vercel and Fly.io.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#product">What it actually does
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-quiet" href="#status">Read the gaps first</a>
       </div>
-      <p class="hero-note">This page is an honest write-up of a system in build. No pilot has run, so no usage, adoption or performance claims appear anywhere on it. The demo tenant is named "Sunway Pilot (unofficial demo)" and implies no institutional affiliation or endorsement.</p>
 
-      <div class="stats" role="list" aria-label="Verified build numbers">
-        <div class="stat reveal" role="listitem"><b>79</b><span>domain tables, 21 migrations</span></div>
-        <div class="stat reveal" role="listitem"><b>432</b><span>tests: 93 database, 243 API, 96 web</span></div>
-        <div class="stat reveal" role="listitem"><b>154</b><span>WCAG contrast checks per build</span></div>
-        <div class="stat reveal" role="listitem"><b>15</b><span>event lifecycle states</span></div>
-        <div class="stat reveal" role="listitem"><b>126</b><span>row-level security policies</span></div>
-        <div class="stat reveal" role="listitem"><b>3</b><span>tenants seeded, one with no university</span></div>
-      </div>
-      <p class="stats-caption">Numbers are reproducible from the private build repository's migrations and test suites.</p>
+      <dl class="figures">
+        <div><dt>Migrations</dt><dd>35</dd></div>
+        <div><dt>Tables, 89 under RLS</dt><dd>91</dd></div>
+        <div><dt>Account-keyed policies</dt><dd>174</dd></div>
+        <div><dt>Contrast checks a build</dt><dd>562</dd></div>
+        <div><dt>Tests, all passing</dt><dd>1,376</dd></div>
+      </dl>
+      <p class="small muted" style="margin-top:.9rem">Read from the database catalogue and from test runs on 2026-08-04, at commit <code>0e0fdeb</code>. The counts move whenever work lands, which is the honest reason to re-run them rather than quote them.</p>
     </div>
   </section>
 
-  <!-- ============================== ONE RECORD ============================== -->
-  <section id="record" aria-labelledby="record-h">
-    <div class="wrap">
-      <p class="kicker reveal">The wedge</p>
-      <h2 id="record-h" class="reveal">One connected event record</h2>
-      <p class="lede reveal">Club events usually live in five tools that do not talk to each other: a form, a chat thread, a spreadsheet, an inbox and someone's memory. WayClub's core decision is that the event is one durable object, and everything attaches to it. Information entered once carries forward; nothing is re-keyed.</p>
-
-      <div class="flow-card reveal">
-        <div class="flow">
-          <div class="flow-step">
-            <span class="chip chip-draft"><span class="glyph" aria-hidden="true">✎</span>Proposal</span>
-            <h3>Entered once</h3>
-            <p>A committee drafts the event: venue, dates, risk questionnaire, budget estimate. Autosaved, keyboard-complete.</p>
-          </div>
-          <div class="flow-step">
-            <span class="chip chip-under-review"><span class="glyph" aria-hidden="true">◐</span>Approval</span>
-            <h3>Routed by conditions</h3>
-            <p>Advisor, Student LIFE, then safety, facilities or finance stages as the event's facts require. Every decision audited.</p>
-          </div>
-          <div class="flow-step">
-            <span class="chip chip-submitted"><span class="glyph" aria-hidden="true">▤</span>Registration</span>
-            <h3>Capacity and waitlist</h3>
-            <p>Students register against the same record. A full event waitlists; a cancellation promotes the head of the queue.</p>
-          </div>
-          <div class="flow-step">
-            <span class="chip chip-live"><span class="glyph" aria-hidden="true">●</span>Attendance</span>
-            <h3>Idempotent check-in</h3>
-            <p>Accessible code-entry check-in on the web pilot; the same registration can never be counted twice.</p>
-          </div>
-          <div class="flow-step">
-            <span class="chip chip-completed"><span class="glyph" aria-hidden="true">✓</span>Record</span>
-            <h3>Verified involvement</h3>
-            <p>Attendance and committee roles become a student's verified record: private by default, never ranked.</p>
-          </div>
-        </div>
-        <div class="flow-footer">One event object in the database. The proposal, every approval decision, each registration, each check-in and the final record all reference it. Nothing is copied between modules.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== WORKFLOW ============================== -->
-  <section id="workflow" aria-labelledby="workflow-h">
-    <div class="wrap">
-      <p class="kicker reveal">The engine</p>
-      <h2 id="workflow-h" class="reveal">A versioned state machine, in rows and transactions</h2>
-      <p class="lede reveal">The approval engine is a configuration-driven in-application state machine. No external workflow service: human approvals measured in days need explicit states, version pinning, idempotent transitions and an audit trail, and all of those live naturally in Postgres.</p>
-
-      <div class="rail reveal" aria-label="Main event lifecycle">
-        <span class="chip chip-draft"><span class="glyph" aria-hidden="true">✎</span>draft</span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="chip chip-submitted"><span class="glyph" aria-hidden="true">▲</span>submitted</span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="chip chip-under-review"><span class="glyph" aria-hidden="true">◐</span>under review</span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="chip chip-approved"><span class="glyph" aria-hidden="true">✓</span>approved</span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="chip chip-live"><span class="glyph" aria-hidden="true">●</span>live</span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="chip chip-completed"><span class="glyph" aria-hidden="true">■</span>completed</span>
-      </div>
-      <p class="rail-note reveal">Six of fifteen server-owned states shown. A reviewer can request changes (<span class="chip chip-revision" style="font-size:0.78rem;padding:2px 10px;"><span class="glyph" aria-hidden="true">↺</span>revision requested</span>), and terminal side states (<span class="chip chip-rejected" style="font-size:0.78rem;padding:2px 10px;">rejected</span> <span class="chip chip-cancelled" style="font-size:0.78rem;padding:2px 10px;">cancelled</span> <span class="chip chip-expired" style="font-size:0.78rem;padding:2px 10px;">expired</span>) close the workflow while the event record and its full history persist.</p>
-
-      <div class="routes">
-        <div class="card route reveal">
-          <h3>Low risk <code>event_low_risk</code></h3>
-          <ol>
-            <li><span class="step">1</span>Advisor endorsement</li>
-            <li><span class="step">2</span>Student LIFE approval</li>
-          </ol>
-          <p class="cond">The default route for on-campus events under the budget threshold.</p>
-        </div>
-        <div class="card route reveal">
-          <h3>Off campus <code>event_off_campus</code></h3>
-          <ol>
-            <li><span class="step">1</span>Advisor endorsement</li>
-            <li><span class="step">2</span>Student LIFE approval</li>
-            <li><span class="step">3</span>Safety review</li>
-            <li><span class="step">3</span>Facilities review, in parallel, only when the venue is institution-managed</li>
-          </ol>
-          <p class="cond">Selected when <code>isOffCampus</code> is true. Skipped branches are recorded as skipped, so the route taken is fully auditable.</p>
-        </div>
-        <div class="card route reveal">
-          <h3>Budget threshold <code>event_budget_threshold</code></h3>
-          <ol>
-            <li><span class="step">+</span>The otherwise-applicable route</li>
-            <li><span class="step">$</span>Finance approval appended</li>
-          </ol>
-          <p class="cond">Applied when the estimated budget reaches the institution's threshold. Conditions compose: off-campus over threshold gets both.</p>
-        </div>
+  <!-- THE PROBLEM AND THE RECORD -->
+  <section id="product" aria-labelledby="product-h">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">The problem</p>
+        <h2 id="product-h">Approvals live in an inbox, and the event lives in six places</h2>
+        <p class="lead">Student clubs coordinate events, approvals, members and communication across email, WhatsApp, spreadsheets, forms, shared drives and disconnected portals. Approvals are slow, documents go missing, ownership is unclear, and nobody can say who agreed to what. Off-campus and higher-risk events are worst, because they are exactly the ones that need a paper trail.</p>
+        <p>The research behind WayClub is grounded in a Malaysian private university's student council town hall of November 2024, which attributed club event-approval delays to safety concerns and administrative processes, with off-campus events requiring additional scrutiny. The same university's clubs and societies manual requires a proposal at least one month before a major event, routed from committee to advisor to student services. None of the tools in that chain were built for it.</p>
       </div>
 
-      <div class="wf-props">
-        <div class="card reveal">
-          <h3>Versions pin forever</h3>
-          <p>Definitions are immutable version rows. An in-flight approval finishes under the rules it started with, and the audit trail names the version on every decision, so history can be replayed against the rules that governed it.</p>
-        </div>
-        <div class="card reveal">
-          <h3>Idempotency is a constraint</h3>
-          <p>One decision row per stage is a database <code>unique</code> constraint, and a decided stage matches no update policy. Double-deciding is impossible at the schema level, not merely discouraged at the API level.</p>
-        </div>
-        <div class="card reveal">
-          <h3>Revisions append, never overwrite</h3>
-          <p>Requesting changes re-opens the submission; resubmission inserts fresh stage rows with an incremented attempt counter. Every attempt's decisions survive as first-class history with a side-by-side diff.</p>
-        </div>
+      <div class="card reveal" style="margin-bottom:2rem">
+        <p class="micro">The design decision everything else serves</p>
+        <h3 style="font-size:1.25rem;margin-bottom:.6rem">The event is one durable record</h3>
+        <p style="font-size:1rem">The proposal, the multi-stage approval, the poster, registration, the entry fee, attendance, the photographs taken on the day, the post-event report and the student's verified involvement record all attach to the same object, through fifteen server-owned states from <code>draft</code> to <code>archived</code>. Information entered once carries forward. Nothing is re-keyed between an email thread and a spreadsheet, and nothing is lost between them.</p>
+      </div>
+
+      <h3 class="reveal" style="font-size:1.3rem;margin:2.5rem 0 1.2rem">What a real person can finish today</h3>
+      <p class="lead reveal" style="margin-bottom:1.6rem">Each line below is a journey somebody can complete end to end in the running application, not a table that exists in the schema.</p>
+
+      <div class="grid grid-4 reveal">
+        <article class="card">
+          <p class="micro">A student</p>
+          <ul class="dot-list">
+            <li>Browses clubs with each club's trust state in plain language, joins an open one or applies to an approval-based one and answers that club's own questions</li>
+            <li>Discovers events under day headers with posters, entry-fee chips and going counts</li>
+            <li>Saves an event without committing to attend, privately</li>
+            <li>Registers, with capacity and a waitlist</li>
+            <li>Checks in with an eight-character attendance code</li>
+            <li>Uploads a photograph to the event's gallery once it is live</li>
+            <li>Holds a verified involvement record and downloads it as a document</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <p class="micro">A committee member</p>
+          <ul class="dot-list">
+            <li>Writes a multi-step proposal that autosaves, with a poster and required alt text</li>
+            <li>Submits it into an approval route chosen by the answers given</li>
+            <li>Revises after changes are requested, and the route is re-evaluated against what the event now is</li>
+            <li>Walks the event from approved to scheduled, open, live, completed, reported and archived</li>
+            <li>Runs check-in, then writes a report pre-filled from real attendance rows</li>
+            <li>Issues participation records and certificates to verified attendees</li>
+            <li>Sets club jobs with due dates and assignees, and shapes the club's own look</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <p class="micro">A reviewer</p>
+          <ul class="dot-list">
+            <li>Works a queue sorted by service-level due date, filtered by status, club, risk and overdue</li>
+            <li>Reads full event context on one screen</li>
+            <li>Sees a field-level diff of what changed since the last submission, in sentences</li>
+            <li>Is warned in words when the risk level moved, because that changes who must approve</li>
+            <li>Approves, requests changes with a mandatory comment, or rejects</li>
+            <li>Delegates the queue to a named substitute for a bounded period before going away</li>
+            <li>Sees a substitute's decisions marked as made on the delegator's behalf</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <p class="micro">A president, an advisor, a director</p>
+          <ul class="dot-list">
+            <li>Records an election or an appointment as an outcome, with evidence</li>
+            <li>Forms the incoming term and initiates a handover with role-specific checklists</li>
+            <li>Resolves ownership risks and completes a two-party attestation that no secret is ever part of</li>
+            <li>Executes an effective-date authority transfer, in the browser</li>
+            <li>Opens oversight and reads what is blocked, who is waiting on whom, and what is overdue</li>
+            <li>Is told plainly when the answer is that they oversee nothing</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="callout reveal" style="margin-top:2rem">
+        <p class="micro">The refusal that shapes the product</p>
+        <p>WayClub records an entry fee and says who collects it. It never processes a payment. The fee tile on an event page reads, verbatim: <b>"Collected by {club}, not by WayClub."</b> There is no ranking, no leaderboard, no social feed, no internal chat, no accounting ledger, no biometric attendance and no predictive analytics on students. The rule is that if mishandling the data could seriously harm a student, WayClub does not store it.</p>
       </div>
     </div>
   </section>
 
-  <!-- ============================== SECURITY ============================== -->
+  <!-- IDENTITY -->
+  <section id="identity" aria-labelledby="identity-h">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">The identity</p>
+        <h2 id="identity-h">A violet-black world with something lit in it</h2>
+        <p class="lead">The first design pass measured a reference product honestly and produced something competent and anonymous. The owner rejected it, redesigned the event card himself, and supplied a runnable mockup drawn over a real WayClub screenshot. That mockup is now the authority: where it and any written description disagree, the mockup wins.</p>
+      </div>
+
+      <div class="swatches reveal" style="margin-bottom:2.5rem">
+        <div class="swatch"><div class="chip" style="background:#090811"></div><div class="meta"><b>Page</b><code>#090811</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#12101B"></div><div class="meta"><b>Card</b><code>#12101B</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#1A1725"></div><div class="meta"><b>Raised</b><code>#1A1725</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#8B5CF6"></div><div class="meta"><b>Primary violet</b><code>#8B5CF6</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#5EE7C4"></div><div class="meta"><b>Emerald</b><code>#5EE7C4</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#F8F6FF"></div><div class="meta"><b>Primary ink</b><code>#F8F6FF</code></div></div>
+      </div>
+
+      <p class="small muted reveal" style="margin-bottom:3rem;max-width:72ch">None of those values is a pasted literal. The token package holds recipes in OKLCH, a lightness ladder and a chroma curve per family, and the build materialises every step and gamut-maps it into sRGB. The ladder is anchored so the generator lands on the owner's own values, and seven of the nine land exactly. Two did not survive the contrast gate and moved one rung up their ramp: the muted label, and the top stop of the action gradient, on which a white arrow measured 2.40:1. If a value fails, the value moves, never the gate.</p>
+
+      <div class="card-demo reveal">
+        <div>
+          <article class="event-card">
+            <div class="event-hero">
+              <span class="save-chip" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4.2L5 20V5a1 1 0 0 1 1-1Z"/></svg>
+              </span>
+              <svg class="emblem" width="86" height="56" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <g fill="none" stroke="rgba(255,255,255,.88)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11.4 8.6 H8.1 V23.4 H11.4"/>
+                  <path d="M20.6 8.6 H23.9 V23.4 H20.6"/>
+                </g>
+                <circle cx="16" cy="16" r="7.6" fill="#5EE7C4" opacity=".22"/>
+                <circle cx="16" cy="16" r="4.1" fill="#5EE7C4"/>
+              </svg>
+              <p class="schedule-pill">
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 2.8v4M16 2.8v4M3.5 10h17"/></svg>
+                  Fri 21 Aug
+                </span>
+                <span class="sep" aria-hidden="true"></span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.7"/><path d="M12 7.2V12l3.2 2"/></svg>
+                  10:03 PM
+                </span>
+              </p>
+            </div>
+            <div class="event-body">
+              <!-- No status dot here on purpose. The product renders the lit dot
+                   only beside the words "Happening now", for a state the model
+                   really has, and this card is an illustration with no state. A
+                   showcase about honest states should not decorate itself with
+                   one. -->
+              <h3 class="event-title">Open Day: Capture the Flag Taster</h3>
+              <div class="host-row">
+                <span class="host-logo" aria-hidden="true">CS</span>
+                <span>
+                  <span class="micro" style="display:block">Hosted by</span>
+                  <b style="font-weight:600;font-size:.95rem">Cybersecurity Club</b>
+                </span>
+              </div>
+              <div class="event-footer">
+                <span class="venue">
+                  <span class="venue-icon" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+                  </span>
+                  <span class="venue-text">
+                    <span class="micro">Location</span>
+                    <b>Student Hub 1</b>
+                  </span>
+                </span>
+                <span class="arrow-btn" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                </span>
+              </div>
+            </div>
+          </article>
+          <p class="small muted" style="margin-top:1rem;max-width:44ch">Rebuilt on this page from the product's own tokens, with no poster, so you can see the fallback art. Hover it on a pointer device. Ask for reduced motion and it holds still.</p>
+        </div>
+
+        <div>
+          <p class="micro">The card, region by region</p>
+          <ul class="anatomy">
+            <li><span class="n">1</span><b>Hero</b><span class="d">Real artwork when the event has a poster. With none it must still look designed, from CSS alone and with no new asset: a deep indigo to ultraviolet radial, a faint perspective grid, a beam, an orb and the waypoint emblem. The hue is taken from the club's own accent, so a red club gets red-family art even in a shared feed.</span></li>
+            <li><span class="n">2</span><b>Save control</b><span class="d">A blurred dark pill driving the app's real save state. It was tempting to ship a decorative bookmark; instead saving was built for real, with a migration, a policy and two endpoints.</span></li>
+            <li><span class="n">3</span><b>Schedule pill</b><span class="d">Floating over the hero's lower edge, the only other place blur is permitted. Locale-aware, and in the event's own timezone, never the fixture.</span></li>
+            <li><span class="n">4</span><b>Title</b><span class="d">The primary element. The lit dot appears only for a state the model really has, and never travels without the words beside it.</span></li>
+            <li><span class="n">5</span><b>Hosted by</b><span class="d">An inset row with a hairline border and the club's real logo, rather than an icon floating in empty space.</span></li>
+            <li><span class="n">6</span><b>Footer</b><span class="d">The venue in a soft square on the left, the gradient arrow that opens the event on the right. The two controls must not fire each other or navigate twice.</span></li>
+          </ul>
+          <p class="small muted" style="margin-top:1rem">The card lifts 7px on hover, which deliberately overrides an earlier rule that banned hover transforms after measuring a reference product's restraint. The override is the owner's, and it is recorded as an architecture decision rather than left as a source comment somebody would later read as a regression.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-2 reveal" style="margin-top:3rem">
+        <article class="card">
+          <p class="micro">Per-club colour</p>
+          <h3>One hue in, a whole room out</h3>
+          <p>A club publishes an accent in its customisation studio and an OKLCH engine derives the rest: canvas, inks, hairlines and action colour, every one contrast-gated. Inside a club's own space that palette takes over. On a mixed surface, home, discover, the calendar, the page stays WayClub's and the variety comes from the artwork, because a feed repainted per row is a rainbow.</p>
+          <p style="margin-top:.7rem">A club sets two hues and nothing else. The strengths are platform-owned, so no club can hand its page a brighter glow than the page next door, and the anatomy is never repainted.</p>
+        </article>
+        <article class="card">
+          <p class="micro">Calm Operations</p>
+          <h3>The dean does not get a sunset</h3>
+          <p>Reviews, oversight and administration are excluded from the atmosphere structurally rather than by convention: a club room mounted anywhere inside one of those surfaces cannot tint it, because the exclusion restates every themeable property at higher specificity and the ambient layer vetoes itself when a Calm Operations marker is anywhere in the document.</p>
+          <p style="margin-top:.7rem">A test called "Calm Operations never tints, structurally" pins it, so the rule cannot quietly decay into a convention.</p>
+        </article>
+      </div>
+
+      <h3 class="reveal" style="font-size:1.3rem;margin:3rem 0 .6rem">A page lit by its own poster</h3>
+      <p class="lead reveal" style="margin-bottom:1.4rem">Every uploaded image is measured for the colour it is actually about, and an event page is lit by its own artwork. Both panels below belong to the same club, with the same teal action colour. Only the poster differs.</p>
+      <div class="poster-pair reveal">
+        <div class="poster-demo" style="background:linear-gradient(135deg,#090811,#0D0B17 52%,#08070E) padding-box; position:relative; isolation:isolate; border-color:rgba(255,255,255,.10)">
+          <span aria-hidden="true" style="position:absolute;inset:0;z-index:-1;border-radius:inherit;background:radial-gradient(circle at 18% 18%, rgba(98,50,172,.42), transparent 62%)"></span>
+          <p class="micro">Open Day: Capture the Flag Taster</p>
+          <b>Poster measures <code style="background:none;border:none;padding:0;color:inherit">#6A4AA9</code></b>
+          <p>Derived light: <code style="background:none;border:none;padding:0;color:inherit">rgb(98, 50, 172)</code>, laid over the page at a strength the platform owns.</p>
+        </div>
+        <div class="poster-demo" style="background:linear-gradient(135deg,#090811,#0D0B17 52%,#08070E) padding-box; position:relative; isolation:isolate; border-color:rgba(255,255,255,.10)">
+          <span aria-hidden="true" style="position:absolute;inset:0;z-index:-1;border-radius:inherit;background:radial-gradient(circle at 18% 18%, rgba(20,98,93,.46), transparent 62%)"></span>
+          <p class="micro">Blue Team Bootcamp</p>
+          <b>Poster measures <code style="background:none;border:none;padding:0;color:inherit">#35857F</code></b>
+          <p>Derived light: <code style="background:none;border:none;padding:0;color:inherit">rgb(20, 98, 93)</code>. Same club, same accent, a different room.</p>
+        </div>
+      </div>
+      <p class="small muted reveal" style="margin-top:1rem;max-width:74ch">Those four values were read from the running product: the two poster colours from the database, the two derived tints from the browser's own computed styles. The measurement is a chroma-weighted hue histogram rather than a most-frequent colour, so a small saturated logo can beat the white field it sits on, and an image with no colour worth reporting stores nothing at all rather than a confident guess. <a href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/06-colour-from-content.md">Full detail in the deep dive</a>.</p>
+
+      <div class="card reveal" style="margin-top:2.5rem">
+        <p class="micro">The mark</p>
+        <h3>A waypoint, not a letter</h3>
+        <p>The previous mark was a bold W whose right arm finished higher than its left. It was competent and it was anonymous: drawing the letter the name starts with is what a product does when it has not found an idea. The mark is now two brackets framing a single lit point, a place marked, a point on a way. The brackets are always WayClub's; the point can carry a club's own hue. It is the same glyph in the navigation, the browser tab and the app icon, so there are not three drawings to drift apart.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
   <section id="security" aria-labelledby="security-h">
-    <div class="wrap">
-      <p class="kicker reveal">Security and tenancy</p>
-      <h2 id="security-h" class="reveal">One mistake must never equal one breach</h2>
-      <p class="lede reveal">WayClub holds student data for many institutions in one database, so cross-tenant disclosure is the critical risk. Isolation is enforced where application bugs cannot reach it: in Postgres, with row-level security binding the only role that ever handles requests.</p>
-
-      <div class="sec-grid">
-        <div class="card reveal">
-          <h3>Deny by default</h3>
-          <p>Row-level security is enabled on every tenant-scoped table. Tables without an API surface yet have no policies and no grants at all, so the safe state is the default state. Policies grant the minimum each role needs, and write policies are stricter than read policies.</p>
-        </div>
-        <div class="card reveal">
-          <h3>Identity travels with the transaction</h3>
-          <p>The API verifies the session JWT, then binds its claims to the database transaction. Policies read the user and institution from those claims, so pooled connections can never leak identity between requests.</p>
-          <div class="codeblock" aria-label="SQL: setting claims per transaction"><span class="hl">select</span> set_config(
-  'request.jwt.claims',
-  $claims_json,
-  <span class="hl">true</span>  <span style="opacity:.7">-- transaction-local</span>
-);</div>
-        </div>
-        <div class="card reveal">
-          <h3>404, indistinguishable</h3>
-          <p>A request for another tenant's row returns 404, byte-identical to a genuinely missing row. Tenants cannot be enumerated and existence cannot be probed. An isolation test discovers every tenant-scoped table mechanically and proves cross-tenant reads and writes are denied on each, in both directions, with positive controls so it cannot pass vacuously.</p>
-        </div>
-        <div class="card reveal">
-          <h3>A hash-chained audit log</h3>
-          <p>Every decision, transition and permission change appends an audit row hashing the previous row for that institution. No role can update or delete audit rows; a trigger blocks even the table owner. Tampering breaks the chain visibly from that point onward, and the test suite verifies the chain by independent recomputation.</p>
-          <div class="codeblock" aria-label="Audit hash chain formula">hash = sha256( prev_hash | institution | actor
-             | action | target | detail | utc_time )</div>
-        </div>
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">Tenancy and integrity</p>
+        <h2 id="security-h">One mistake must never equal one breach</h2>
+        <p class="lead">Cross-tenant information disclosure is the critical risk for a platform holding student data for many organisations, so the boundary is enforced where a forgotten application check cannot reach it: in the database. The tenant root is the account, not the institution, because a club must be able to adopt WayClub without its university being a customer.</p>
       </div>
-      <div class="card reveal" style="margin-top:24px">
-        <h3>What an adversarial review found</h3>
-        <p>These claims were put through a three-lens adversarial review briefed to refute them, not confirm them. It proved eighteen defects with reproducible output.</p>
-        <p><strong>What held:</strong> cross-tenant reads and writes across all twenty-five tenant-scoped tables leaked nothing in either direction, sessions without claims read nothing at all, every cross-tenant object returned 404 rather than 403, forged and unsigned tokens were rejected, and double approvals were blocked structurally by a database constraint.</p>
-        <p><strong>What did not:</strong> the workflow engine, not the tenancy layer, held the worst defect. Approval routing was never re-evaluated after a revision, so an event approved as low-risk could be edited into an off-campus, high-risk, over-budget event and keep its original two-stage route. The same content submitted fresh produced five approval stages; smuggled through a revision it produced two. That is fixed and covered by a regression test verified to fail without the fix. Other findings, including audit-chain ordering under concurrent writes, remain open and are tracked with severity and location rather than quietly deferred.</p>
-      </div>
-    </div>
-  </section>
 
-  <!-- ============================== DESIGN ============================== -->
-  <section id="design" aria-labelledby="design-h">
-    <div class="wrap">
-      <p class="kicker reveal">Design system</p>
-      <h2 id="design-h" class="reveal">Calm operations, accessible by construction</h2>
-      <p class="lede reveal">The interface is neutral; colour appears when something has a status, needs attention or is interactive. The workflow states below are rendered from the product's real tokens, and this page follows your system's light or dark preference the same way the app does.</p>
+      <ul class="rule-list reveal">
+        <li>
+          <b>Deny by default, in two layers</b>
+          <span>Row-level security is enabled on every tenant-scoped table in the same migration that creates it. 174 policies across 63 tables, every one keyed on <code>account_id</code>, asserted mechanically against <code>pg_policy</code> rather than against a hand-kept list. The other 26 tables have row-level security on, no policies and no grants, so an unbuilt surface fails at the grant layer first and the policy layer second.</span>
+        </li>
+        <li>
+          <b>Identity travels with the transaction</b>
+          <span>Each request runs as a Postgres role that owns nothing and holds no bypass, inside one transaction that first sets the caller's verified claims as a transaction-local setting. Policies read them through a shim shaped exactly like hosted Supabase, so pooled connections cannot leak identity between requests and a later move to hosted Postgres is a connection-string swap.</span>
+        </li>
+        <li>
+          <b>A club cannot impersonate an institution, structurally</b>
+          <span>Every tenant-scoped row carries a composite foreign key binding its <code>institution_id</code> to its own account. That is a constraint, not a policy, so it binds the table owner and the bypass role exactly as it binds the request role. A standalone account owns no institution row, so it cannot write an institution reference anywhere, cannot hold an official reviewer role, and cannot record an approval carrying a university's authority. Verified: even the owning role gets SQLSTATE <code>23503</code>.</span>
+        </li>
+        <li>
+          <b>404, indistinguishable from not-found</b>
+          <span>A request for another tenant's row returns 404, byte-identical to a request for a row that never existed, so tenants cannot be enumerated. The test that proves it sits directly beside the test proving that a same-tenant outsider gets 403 with a permission-denied code, which is what makes the distinction real rather than incidental.</span>
+        </li>
+        <li>
+          <b>An append-only audit log, chained per account</b>
+          <span>Every decision, transition and permission change writes a row committing to the hash of the previous row for the same account. No role holds update or delete, and a trigger blocks both even for the table owner. The chain forks under concurrency if position is allocated outside the lock, which it once was; position is now assigned inside the lock at commit time, with a unique constraint as the structural backstop, and a test that genuinely overlaps two transactions rather than relying on a serial suite.</span>
+        </li>
+        <li>
+          <b>Saving an event is private by construction</b>
+          <span>One select policy, ending in <code>user_id = auth.uid()</code>. No audit row is written, because the log is administrator-readable and would hand back exactly what the policy refuses. There is no saver count anywhere, because "twelve people saved this" is a demand signal, and demand signals are the pressure the product boundaries exist to refuse.</span>
+        </li>
+      </ul>
 
-      <div class="palette" aria-label="The ten workflow-state chips, rendered from real tokens">
-        <span class="chip chip-draft"><span class="glyph" aria-hidden="true">✎</span>Draft</span>
-        <span class="chip chip-submitted"><span class="glyph" aria-hidden="true">▲</span>Submitted</span>
-        <span class="chip chip-under-review"><span class="glyph" aria-hidden="true">◐</span>Under review</span>
-        <span class="chip chip-revision"><span class="glyph" aria-hidden="true">↺</span>Revision requested</span>
-        <span class="chip chip-approved"><span class="glyph" aria-hidden="true">✓</span>Approved</span>
-        <span class="chip chip-rejected"><span class="glyph" aria-hidden="true">✕</span>Rejected</span>
-        <span class="chip chip-live"><span class="glyph" aria-hidden="true">●</span>Live</span>
-        <span class="chip chip-completed"><span class="glyph" aria-hidden="true">■</span>Completed</span>
-        <span class="chip chip-cancelled"><span class="glyph" aria-hidden="true">⊘</span>Cancelled</span>
-        <span class="chip chip-expired"><span class="glyph" aria-hidden="true">◷</span>Expired</span>
-      </div>
-      <p class="palette-note">A state is always colour plus label plus icon; nothing in the product conveys status by colour alone.</p>
-
-      <div class="ds-facts">
-        <div class="card reveal">
-          <h3>A contrast gate, not a checklist</h3>
-          <p>Every token pair is verified programmatically on every build: 77 pairs, 154 checks across light and dark. Text pairs currently sit at or above 4.97:1 against a 4.5:1 minimum. A violation fails the build; there is no manual sign-off path around it.</p>
-        </div>
-        <div class="card reveal">
-          <h3>Branding that cannot break contrast</h3>
-          <p>An institution may change a logo and two brand colours, nothing else. Saved colours are darkened or lightened until their button ink meets 4.5:1, and the derived values are what ship. A tenant can submit pure yellow and still get compliant buttons.</p>
-        </div>
-        <div class="card reveal">
-          <h3>Keyboard-complete, motion-respectful</h3>
-          <p>Every flow works with keyboard alone, behind a 2px offset focus ring that overflow cannot clip. Under reduced-motion preferences, every animation on this page and in the product collapses to nothing.</p>
-          <span class="focus-demo"><span class="btn btn-quiet" aria-hidden="true" style="pointer-events:none;">A focused control</span></span>
-        </div>
+      <div class="callout reveal" style="margin-top:2rem">
+        <p class="micro">What an adversarial review found</p>
+        <p>Design claims are worth little until somebody tries to break them, so the build was put through a three-lens adversarial review whose brief was to refute these claims rather than confirm them. It proved eighteen defects with reproducible output. The tenancy layer held: cross-tenant sweeps leaked nothing in either direction, sessions carrying no claims read zero rows everywhere, tokens with no algorithm or the wrong secret were rejected, and double approvals were blocked by a unique constraint rather than by application logic.</p>
+        <p>The workflow layer did not. An organiser could take an event approved on the low-risk route, edit it during a revision cycle into an off-campus, high-risk, over-threshold event, resubmit, and keep the original two-stage route: safety, facilities and finance never saw it. The same content submitted fresh produced five approval stages; smuggled through a revision it produced two. All eighteen are now closed, each re-verified by replaying the reviewer's own exploit rather than by trusting a fix report. Two more were found during that verification, including a one-second blind spot in session revocation that an existing test had been hiding behind a sleep.</p>
       </div>
     </div>
   </section>
 
-  <!-- ============================== SCREENS ============================== -->
+  <!-- ACCESSIBILITY -->
+  <section id="access" aria-labelledby="access-h">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">Accessibility</p>
+        <h2 id="access-h">A gate, not a checklist</h2>
+        <p class="lead">WCAG 2.2 AA is a release requirement on the same footing as the isolation tests. The colour part of it is enforced by a build that refuses to produce output when a value fails, so a designer cannot sign off around it and a reviewer cannot forget.</p>
+      </div>
+
+      <div class="grid grid-3 reveal">
+        <article class="card">
+          <p class="micro">Per build</p>
+          <h3>562 contrast checks</h3>
+          <p>156 pair checks, 38 composited wash checks and 368 real-stack checks over the lit page, the card, and both glass fills over white artwork and over black, because a photograph can be anything. Worst text pair 4.61:1 against a 4.5:1 minimum.</p>
+        </article>
+        <article class="card">
+          <p class="micro">Per club</p>
+          <h3>660 more</h3>
+          <p>Eighteen adversarial accents are derived into full themes (380 checks) and then used to light a page (280 checks), every fixed ink, link, danger text, border and focus ring measured on the lit canvas rather than on the flat one.</p>
+        </article>
+        <article class="card">
+          <p class="micro">Refused</p>
+          <h3>4 of 11 accents</h3>
+          <p>Accent validation is real rather than advisory: of eleven probe colours the build accepts seven and refuses four. A club that submits an unusable accent is told so, with a reading, rather than quietly given a page nobody can read.</p>
+        </article>
+      </div>
+
+      <ul class="rule-list reveal" style="margin-top:2rem">
+        <li><b>No status by colour alone</b><span>Every state pairs colour with a word and usually an icon. The lit dot on a card renders only beside the words "Happening now". A revision diff strikes the old value through and also says "changed from … to", so meaning never rides on styling.</span></li>
+        <li><b>Keyboard-complete</b><span>Every flow is operable by keyboard alone. Two Playwright specs walk the reviewer and continuity screens for the skip link, focus visibility, keyboard reach, both themes and status-in-words.</span></li>
+        <li><b>Reduced motion is honoured properly</b><span>Collapsing a transition duration still lets a transform land, so the card's hover lift is removed outright rather than merely shortened, and the ambient cross-fade is not registered at all.</span></li>
+        <li><b>The accessible path is the primary path</b><span>Check-in is manual lookup plus an eight-character code, which a QR design would have needed as a fallback anyway. Building it first means the accessible route got the engineering attention rather than the leftovers.</span></li>
+        <li><b>Not claimed</b><span>There is no axe dependency anywhere in the repository, so there is no automated accessibility scan in the pipeline, and no screen-reader pass has been recorded. Conformance is only ever claimed alongside recorded evidence, and none exists for those two.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
   <section id="screens" aria-labelledby="screens-h">
-    <div class="wrap">
-      <p class="kicker reveal">The product</p>
-      <h2 id="screens-h" class="reveal">Screens</h2>
-      <p class="lede reveal">Captured from the running application against seeded demo data, not mocked up. Each screen is shown in the viewer's own colour scheme.</p>
-      <div class="screens">
-        <figure class="shot reveal">
-          <img class="light" src="assets/screens/05-event-status.png" alt="An event page showing the status chip, approval progress with each stage and its decision, and the audit history timeline." loading="lazy" width="2880" height="1800">
-          <img class="dark" src="assets/screens/05-event-status-dark.png" alt="An event page showing the status chip, approval progress with each stage and its decision, and the audit history timeline." loading="lazy" width="2880" height="1800">
-          <figcaption><strong>The one record</strong><span>Proposal, stage-by-stage approval progress and the decision history, all on the event itself.</span></figcaption>
-        </figure>
-        <figure class="shot reveal">
-          <img class="light" src="assets/screens/07-review-detail.png" alt="A reviewer's decision page with the full proposal, approval progress and approve, request changes and reject actions." loading="lazy" width="2880" height="1800">
-          <img class="dark" src="assets/screens/07-review-detail-dark.png" alt="A reviewer's decision page with the full proposal, approval progress and approve, request changes and reject actions." loading="lazy" width="2880" height="1800">
-          <figcaption><strong>Reviewer decision</strong><span>Full event context on one page. Request changes and reject both require a written comment.</span></figcaption>
-        </figure>
-        <figure class="shot reveal">
-          <img class="light" src="assets/screens/06-reviewer-queue.png" alt="The approvals queue listing stages assigned to the reviewer, with status, club, risk and due-date filters." loading="lazy" width="2880" height="1800">
-          <img class="dark" src="assets/screens/06-reviewer-queue-dark.png" alt="The approvals queue listing stages assigned to the reviewer, with status, club, risk and due-date filters." loading="lazy" width="2880" height="1800">
-          <figcaption><strong>Approvals queue</strong><span>Only the stages assigned to your reviewer roles, sorted by service-level due date.</span></figcaption>
-        </figure>
-        <figure class="shot reveal">
-          <img class="light" src="assets/screens/04-edit-event.png" alt="The multi-step event proposal form showing the Basics step, step navigation and an autosave indicator." loading="lazy" width="2880" height="1800">
-          <img class="dark" src="assets/screens/04-edit-event-dark.png" alt="The multi-step event proposal form showing the Basics step, step navigation and an autosave indicator." loading="lazy" width="2880" height="1800">
-          <figcaption><strong>Proposal form</strong><span>Six steps, autosave with an honest saved-at indicator, and review before submit.</span></figcaption>
-        </figure>
-        <figure class="shot reveal">
-          <img class="light" src="assets/screens/10-admin-audit.png" alt="The administrator audit log table listing time, actor, kind and detail for each recorded action." loading="lazy" width="2880" height="1800">
-          <img class="dark" src="assets/screens/10-admin-audit-dark.png" alt="The administrator audit log table listing time, actor, kind and detail for each recorded action." loading="lazy" width="2880" height="1800">
-          <figcaption><strong>Audit log</strong><span>Append-only and hash-chained in the database. Entries cannot be edited or deleted, by anyone.</span></figcaption>
-        </figure>
-        <figure class="shot reveal">
-          <img class="light" src="assets/screens/01-student-home.png" alt="The home dashboard showing required actions, upcoming events, club memberships and recent notifications." loading="lazy" width="2880" height="1800">
-          <img class="dark" src="assets/screens/01-student-home-dark.png" alt="The home dashboard showing required actions, upcoming events, club memberships and recent notifications." loading="lazy" width="2880" height="1800">
-          <figcaption><strong>Home</strong><span>Required actions first. Every number leads somewhere useful, and empty states say why.</span></figcaption>
-        </figure>
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">Screens</p>
+        <h2 id="screens-h">Captured from the running application</h2>
+        <p class="lead">Against the seeded demo database, in both themes and at phone width. Nothing here is a mock-up, and nothing has been retouched.</p>
       </div>
-      <p class="screens-note reveal">Ten screens exist in the build; six are shown here. The remainder (discover, club workspace, organiser check-in, profile and records) are in the repository under <code>assets/screens/</code>.</p>
-    </div>
-  </section>
-
-  <!-- ============================== STACK ============================== -->
-  <section id="stack" aria-labelledby="stack-h">
-    <div class="wrap">
-      <p class="kicker reveal">Under the hood</p>
-      <h2 id="stack-h" class="reveal">The stack</h2>
-      <p class="lede reveal">A pnpm monorepo: contract-first REST between a NestJS modular monolith and a Next.js web app, PostgreSQL 17 as the enforcement layer, and a Flutter check-in app planned against the same contract.</p>
-      <div class="stack reveal" role="list" aria-label="Technologies">
-        <span role="listitem">PostgreSQL 17 + RLS</span>
-        <span role="listitem">NestJS 11</span>
-        <span role="listitem">Next.js App Router</span>
-        <span role="listitem">TypeScript strict</span>
-        <span role="listitem">TanStack Query</span>
-        <span role="listitem">Tailwind v4</span>
-        <span role="listitem">pnpm workspaces</span>
-        <span role="listitem">vitest</span>
-        <span role="listitem">Design tokens (W3C format)</span>
-        <span role="listitem">Flutter (planned)</span>
-        <span role="listitem">GitHub Actions CI</span>
+      <div id="screens-grid" class="grid grid-2 reveal">
+        <div class="callout" style="grid-column:1/-1">
+          <p class="micro">Currently none</p>
+          <p>The captures that used to sit here were of a product that no longer looks like this: they predate the whole identity described above, and the application shell has changed again since. They have been removed rather than left to flatter a version nobody would recognise, because a stale screenshot is worse than no screenshot. New ones are taken against the current build, in both themes and at phone width, and land here when they exist.</p>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- STATUS -->
+  <section id="status" aria-labelledby="status-h">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">Honest status</p>
+        <h2 id="status-h">What is built, what is half-built, and what is only a shape</h2>
+        <p class="lead">This section follows one rule: claim only what exists at each tier, and never borrow wording from the tier above. A showcase that admits its gaps is worth more than one that hides them, and the build repository's own documents already work this way.</p>
+      </div>
+
+      <div class="status-cols reveal">
+        <div class="status-col">
+          <h3><span class="tag tag-built">Built</span></h3>
+          <ul>
+            <li>The core loop end to end on the web: discover, join, propose, route, revise, register, check in, close out, issue records, hand over</li>
+            <li>A public landing page, open sign-up with any email, founder-first club creation, multi-workspace switching, and club-role invites by email</li>
+            <li>Account tenancy with deny-by-default row-level security, and the structural bar on institutional impersonation</li>
+            <li>The versioned workflow engine, with routing re-evaluated on every resubmission</li>
+            <li>Append-only per-account hash-chained audit written by database triggers</li>
+            <li>Leadership continuity, at the database, API and web layers</li>
+            <li>Standalone club mode: a club with no university can get an event approved through its own internal route</li>
+            <li>Per-club theming, poster-derived light, and the design token gate</li>
+            <li>Committee tasks, announcements, files, the event gallery, oversight reads, reviewer delegation</li>
+            <li>Production deployment: Vercel for the web app, Fly.io for the API, hosted Supabase for the database, plus the storage, SMTP, health and single-instance controls below</li>
+          </ul>
+        </div>
+        <div class="status-col">
+          <h3><span class="tag tag-partial">Partly built</span></h3>
+          <ul>
+            <li>Saving an event works on every card and the state rides every listing, but no screen lists what a person saved</li>
+            <li>Reviewer queue filters and sort exist; they do not survive navigating into a stage and back, which the research names as the most-cited reviewer frustration</li>
+            <li>The institution claim and club migration can be negotiated but not executed: the transactional data move is unwritten</li>
+            <li>Notifications reach an in-app inbox and real email; there are no per-person channel preferences, no digests, no push</li>
+            <li>Accessibility: the contrast gate and two keyboard walks are the whole of the automated coverage</li>
+          </ul>
+        </div>
+        <div class="status-col">
+          <h3><span class="tag tag-none">Not built</span></h3>
+          <ul>
+            <li>The mobile app. Its directory is a README, deliberately, and its scope is the full product on a phone rather than a check-in companion</li>
+            <li>QR check-in and the offline attendee queue, which belong to that app. The token design is pinned so the implementation cannot drift, and the substrate table is deliberately unreachable until then</li>
+            <li>Twenty-six tables are shape, not delivery: budgets and reimbursements, meetings and minutes, venue and asset booking, club formation and registration, general requests, notification preferences, event templates, calendar items, imports, retention, verified student identity</li>
+            <li>Interface translation. Money and time are already international; the words are not</li>
+            <li>Mobile, QR check-in and the offline attendee queue are still unbuilt</li>
+            <li>No production backup has ever been restored, and nothing has been load tested</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout reveal" style="margin-top:2rem">
+        <p class="micro">Two things that would be easy to leave out</p>
+        <p><b>Deployed does not mean production-proven.</b> The hosted stack is live, but one backup restore and one end-to-end upload and download through the hosted bucket still need to be proved and recorded. The current sender is also still a test sender (`WayClub &lt;onboarding@resend.dev&gt;`) until a verified domain is configured.</p>
+          <p><b>No pilot has run.</b> There is no usage, no adoption, no measured reduction in approval time, no performance under load and no institutional endorsement. The demo tenant is named "Sunway Pilot (unofficial demo)" and implies no affiliation with, or endorsement by, any institution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEEP DIVES -->
+  <section id="dives" aria-labelledby="dives-h">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="micro">Deep dives</p>
+        <h2 id="dives-h">Six documents, each standing on its own</h2>
+        <p class="lead">Written for somebody deciding whether the engineering is worth their attention. Each cites the private repository by path, and each says where its own claims stop.</p>
+      </div>
+      <div class="grid grid-2 reveal">
+        <a class="dive" href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/01-multi-tenant-rls.md">
+          <h3>Tenancy: the account is the boundary</h3>
+          <p>The Supabase-shaped shim, three database roles, deny-by-default policy shapes, the composite foreign key that binds even the owner, why row-level security is deliberately not forced, and the catalogue-reading tests that pin the real posture.</p>
+          <span class="go">Read <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="dive" href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/02-workflow-state-machine.md">
+          <h3>A versioned state machine in rows</h3>
+          <p>Definitions as data, instances that pin their version forever, idempotency as a constraint rather than a discipline, revision attempts that append instead of overwriting, and why the current stage is derived and never stored.</p>
+          <span class="go">Read <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="dive" href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/03-audit-integrity.md">
+          <h3>An audit log that forks under load, until it does not</h3>
+          <p>Per-account hash chaining, four layers against mutation, the concurrency defect that was real and how commit-time position allocation fixed it, and the honest boundary of what tamper-evidence buys.</p>
+          <span class="go">Read <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="dive" href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/06-colour-from-content.md">
+          <h3>Colour that comes from the content</h3>
+          <p>How a club accent becomes a whole room in OKLCH, how an image reports the colour it is actually about, and how a page can be lit by its own poster without a bright picture ever costing a reader their contrast ratio.</p>
+          <span class="go">Read <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="dive" href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/04-accessibility-and-design.md">
+          <h3>Accessibility by construction</h3>
+          <p>The token system, the contrast gate that cannot be signed off around, constrained club branding, and the structural requirements that shape the product rather than decorate it.</p>
+          <span class="go">Read <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="dive" href="https://github.com/yeegz/WayClub-showcase/blob/main/docs/05-product-boundaries.md">
+          <h3>What WayClub refuses to build</h3>
+          <p>Rejected scope and why: no predictive analytics on students, no leaderboards, no chat, no accounting ledger, no biometrics, no AI in the decision path, and privacy designed in rather than bolted on.</p>
+          <span class="go">Read <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+
+      <div class="card reveal" style="margin-top:2rem">
+        <p class="micro">The stack</p>
+        <p style="font-size:1rem">A pnpm monorepo. A NestJS 11 modular monolith serving a pinned REST contract, a Next.js App Router web app with Tailwind and TanStack Query, PostgreSQL 17 reached through explicit SQL with no ORM that could hide row-level security, and a cross-platform design token package that compiles to CSS, TypeScript and Dart. The workflow engine is a versioned in-application state machine: no Temporal, no Camunda, no external authorisation service. Human approval workflows measured in days are rows and transactions, not a distributed-systems problem.</p>
+      </div>
+    </div>
+  </section>
 </main>
 
-<footer class="site">
-  <div class="wrap foot-inner">
-    <p>WayClub · an engineering showcase by <a href="https://yeegz.github.io">Yousof Selim</a>. MIT licensed. No analytics, no trackers, no external requests.</p>
-    <nav class="foot-links" aria-label="Footer">
-      <a href="https://github.com/yeegz/WayClub-showcase">github.com/yeegz/WayClub-showcase</a>
-      <a href="https://yeegz.github.io">yeegz.github.io</a>
-    </nav>
+<footer class="site-footer">
+  <div class="shell">
+    <div class="footer-row">
+      <span>Built by <a href="https://yeegz.github.io">Yousof Selim</a>.</span>
+      <span><a href="https://github.com/yeegz/WayClub-showcase">This showcase on GitHub</a></span>
+      <span>MIT licensed. Copy anything useful.</span>
+    </div>
+    <p style="margin-top:.9rem;max-width:74ch">The build repository is private. This page contains no application code, no credentials and no real student data: every person named in the seeded database is fictional. No analytics, no trackers, and not a single external request. British English throughout, by design.</p>
   </div>
 </footer>
 
 <script>
-  // Scroll reveals: IntersectionObserver + setTimeout stagger, with a debounced
-  // scroll fallback and a final safety net so content can never remain hidden.
-  // No rAF loops, no ambient animation, and nothing animates under reduced motion.
-  (function () {
-    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var items = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
-    if (reduced || !('IntersectionObserver' in window)) {
-      items.forEach(function (el) { el.classList.add('in'); });
-      return;
-    }
+/* Theme toggle. The page follows the operating system by default and only
+   pins a choice when the visitor makes one, which is why the stored value can
+   be absent. No analytics, no trackers, no network requests of any kind. */
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById("theme-toggle");
+  var stored = null;
+  try { stored = localStorage.getItem("wc-theme"); } catch (e) { /* private mode */ }
+  if (stored === "dark" || stored === "light") root.setAttribute("data-theme", stored);
 
-    var queue = [];
-    var flushScheduled = false;
-    function enqueue(el) {
-      if (el.classList.contains('in') || queue.indexOf(el) !== -1) return;
-      queue.push(el);
-      if (!flushScheduled) {
-        flushScheduled = true;
-        setTimeout(flush, 0);
-      }
-    }
-    function flush() {
-      flushScheduled = false;
-      var batch = queue.splice(0);
-      batch.forEach(function (el, i) {
-        setTimeout(function () { el.classList.add('in'); }, i * 70);
-      });
-    }
+  function isDark() {
+    var attr = root.getAttribute("data-theme");
+    if (attr === "dark") return true;
+    if (attr === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function label() {
+    btn.setAttribute("aria-label", isDark() ? "Switch to the light theme" : "Switch to the dark theme");
+  }
+  label();
+  btn.addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("wc-theme", next); } catch (e) { /* private mode */ }
+    label();
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", label);
 
+  /* Reveal on scroll, and only if the visitor has not asked for less motion.
+     Without IntersectionObserver, or with reduced motion, everything is
+     simply visible: the content never depends on the effect. */
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var targets = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) {
+    targets.forEach(function (el) { el.classList.add("in"); });
+  } else {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          io.unobserve(entry.target);
-          enqueue(entry.target);
-        }
+        if (entry.isIntersecting) { entry.target.classList.add("in"); io.unobserve(entry.target); }
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
-    items.forEach(function (el) { io.observe(el); });
-
-    // Fallback: a debounced viewport sweep on scroll/resize, in case the
-    // observer is throttled (some embedded or background rendering contexts).
-    var sweepTimer = null;
-    function sweep() {
-      var limit = (window.innerHeight || document.documentElement.clientHeight) * 0.96;
-      items.forEach(function (el) {
-        if (el.classList.contains('in')) return;
-        var r = el.getBoundingClientRect();
-        if (r.top < limit && r.bottom > 0) enqueue(el);
-      });
-    }
-    function scheduleSweep() {
-      if (sweepTimer) clearTimeout(sweepTimer);
-      sweepTimer = setTimeout(sweep, 120);
-    }
-    window.addEventListener('scroll', scheduleSweep, { passive: true });
-    window.addEventListener('resize', scheduleSweep, { passive: true });
-    setTimeout(sweep, 150);
-
-    // Safety net: whatever has not revealed after 6 seconds reveals anyway.
-    setTimeout(function () {
-      items.forEach(function (el) { el.classList.add('in'); });
-    }, 6000);
-  })();
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+    targets.forEach(function (el) { io.observe(el); });
+  }
+})();
 </script>
 </body>
 </html>
