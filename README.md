@@ -67,7 +67,7 @@ Latest recorded checks:
 
 | Check | Evidence |
 | --- | --- |
-| Web tests, 8 September | 710 passed across 84 files. |
+| Web tests, 8 September | 714 passed across 85 files. |
 | API integration, 6 September | 714 passed across 52 files. |
 | Isolated database checks, 6 September | 104 passed across two files. |
 | Builds | Production Next.js and isolated demo builds passed. |
