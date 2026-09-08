@@ -1,3 +1,5 @@
+> Historical engineering note (August 2026). The current product, demo and deployment status are in the [showcase README](../README.md). Dates, catalogue counts and old hosting references below describe that earlier snapshot.
+
 # A versioned workflow state machine in application code and Postgres rows
 
 WayClub's approval engine is a configuration-driven state machine that lives entirely in the application and its database. No Temporal, no Camunda, no external workflow service. Human approval workflows are measured in days; they do not need durable-execution infrastructure. They need explicit states, conditional routing, deadlines, idempotent transitions, an audit trail and version pinning, and all of those live naturally in Postgres rows.

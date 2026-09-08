@@ -1,3 +1,5 @@
+> Historical engineering note (August 2026). The current product, demo and deployment status are in the [showcase README](../README.md). Dates, catalogue counts and old hosting references below describe that earlier snapshot.
+
 # Tenancy: the account is the boundary, and the database enforces it
 
 WayClub holds student data for many organisations in one database. Cross-tenant information disclosure is the critical risk in its threat model, so tenancy is enforced at the layer a forgotten application check cannot reach: the database itself.

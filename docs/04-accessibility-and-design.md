@@ -1,3 +1,5 @@
+> Historical engineering note (August 2026). The current product, demo and deployment status are in the [showcase README](../README.md). Dates, catalogue counts and old hosting references below describe that earlier snapshot.
+
 # Accessibility by construction: a gate, not a checklist
 
 WayClub targets **WCAG 2.2 AA** as a release requirement: critical-flow accessibility failures block release, on the same footing as the cross-tenant isolation tests. This document describes how that target is engineered rather than aspired to, drawing on the private repository's `packages/design-tokens` (JSON source, `build.mjs`, generated `dist/`), `docs/DESIGN_SYSTEM.md`, `docs/ANTI_SLOP.md` and `docs/ACCESSIBILITY.md`.

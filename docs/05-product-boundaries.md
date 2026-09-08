@@ -1,3 +1,5 @@
+> Historical engineering note (August 2026). The current product, demo and deployment status are in the [showcase README](../README.md). Dates, catalogue counts and old hosting references below describe that earlier snapshot.
+
 # Product boundaries: what WayClub refuses to build
 
 The most consequential engineering decisions in WayClub are refusals. They are recorded as permanent rejected scope in the private repository (`CLAUDE.md`, `docs/PRODUCT.md`, `docs/PRIVACY.md`, the research synthesis), and they are load-bearing: the trust of students, advisors and administrators in an approvals platform depends on what it could do to them, not only on what it does for them.

@@ -1,3 +1,5 @@
+> Historical engineering note (August 2026). The current product, demo and deployment status are in the [showcase README](../README.md). Dates, catalogue counts and old hosting references below describe that earlier snapshot.
+
 # An audit log that forked under load, until it did not
 
 An approval platform's audit log is the artefact a university will eventually put in front of a committee, or an auditor, or a dispute. "We log everything" is not a property. "The log cannot be silently edited, here is what tampering would look like, and here is the concurrency bug we found in our own first design" is.
