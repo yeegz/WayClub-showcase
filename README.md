@@ -93,3 +93,7 @@ The deeper notes below document earlier architecture work. Their opening notices
 No credentials, real member records or private application source are published here.
 
 Built by [Yousof Selim](https://yeegz.github.io). Showcase material is available under the [MIT licence](LICENSE).
+
+## About the developer
+
+Built by [Yousof Selim](https://yeegz.github.io). Explore the [guided demo](https://wayclub-live-demo.web.app/home?tour=1) or [get in touch](mailto:yousofselim2@gmail.com) about product engineering work.
