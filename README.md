@@ -59,7 +59,7 @@ The September refinement softened generated artwork and image fades, simplified 
 
 ## Current release status
 
-**Updated 8 September 2026.** The public demo is live on Firebase Hosting. The full application is **not yet deployed on the replacement backend**. Paid infrastructure, an owned email sender domain, live account and file journeys, backup restoration and operational checks remain launch work.
+**Updated 6 October 2026.** The public demo is live on Firebase Hosting. Managed Cloud SQL, a private storage bucket and runtime secrets have been provisioned for the replacement deployment. The full application is **not yet publicly deployed on that backend**. All 50 database migrations and managed database-role/private-storage checks passed. The email sender domain is verified and cloud SMTP authentication passed. Hosted account and file journeys, backup restoration and operational checks remain launch work.
 
 The earlier Vercel/Fly deployment is historical and is not the current public product entry point. No adoption, institution endorsement, load-test result or production-readiness claim is made here.
 
@@ -67,11 +67,11 @@ Latest recorded checks:
 
 | Check | Evidence |
 | --- | --- |
-| Web tests, 8 September | 714 passed across 85 files. |
-| API integration, 6 September | 714 passed across 52 files. |
-| Isolated database checks, 6 September | 104 passed across two files. |
+| Web tests, 6 October | 714 passed in fresh remote CI. |
+| API integration, 6 October | 714 passed against real PostgreSQL in fresh remote CI. |
+| Isolated database checks, 6 October | 104 passed in fresh remote CI. |
 | Builds | Production Next.js and isolated demo builds passed. |
-| Browser verification | Real-screen demo navigation, registration and task interactions checked; desktop and phone layouts inspected. |
+| Browser journeys, 6 October | 23 Playwright tests passed in fresh remote CI. |
 
 These are dated development checks, not proof of a complete production deployment.
 
