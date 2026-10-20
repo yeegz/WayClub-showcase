@@ -1,15 +1,15 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/lockup-paper.svg">
-    <img src="assets/brand/lockup-ink.svg" alt="WayClub" width="220">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/brand/lockup-paper.svg">
+    <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/brand/lockup-ink.svg" alt="WayClub" width="220">
   </picture>
 </p>
 
 <p align="center">Group management for teams, clubs and communities.</p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/screens/whats-on-dark.webp">
-  <img src="assets/screens/whats-on-light.webp" alt="What's on: the posters from the clubs someone belongs to, on a laptop and on a phone">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/whats-on-dark.webp">
+  <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/whats-on-light.webp" alt="What's on: the posters from the clubs someone belongs to, on a laptop and on a phone">
 </picture>
 
 A club runs on a few people giving up their evenings. WayClub gives them one place for meetings, tasks and events, and gives everyone else one place to find what is on and say they are coming. When the committee changes, the next one inherits all of it.
@@ -26,12 +26,12 @@ Members see the posters from the clubs they belong to. The poster leads: its col
 
 <p>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/screens/event-dark.webp">
-    <img src="assets/screens/event-light.webp" alt="An event page on a phone: the poster, the time and place, and one Register button" width="49%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/event-dark.webp">
+    <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/event-light.webp" alt="An event page on a phone: the poster, the time and place, and one Register button" width="49%">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/screens/plans-dark.webp">
-    <img src="assets/screens/plans-light.webp" alt="Your plans on a phone: the events you are going to, each with its door code" width="49%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/plans-dark.webp">
+    <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/plans-light.webp" alt="Your plans on a phone: the events you are going to, each with its door code" width="49%">
   </picture>
 </p>
 
@@ -40,8 +40,8 @@ One button to register, and a door code that is there when you arrive. Your plan
 ### Run the committee
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/screens/workspace-dark.webp">
-  <img src="assets/screens/workspace-light.webp" alt="The committee workspace: what is on now, what is waiting on you, what is due this week, and every event by stage">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/workspace-dark.webp">
+  <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/workspace-light.webp" alt="The committee workspace: what is on now, what is waiting on you, what is due this week, and every event by stage">
 </picture>
 
 The workspace opens on the questions a committee actually asks: what is happening now, what is waiting on me, what is due this week. Events move through being planned, waiting for a yes, published and done.
@@ -49,8 +49,8 @@ The workspace opens on the questions a committee actually asks: what is happenin
 ### Meet, decide, follow up
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/screens/meeting-dark.webp">
-  <img src="assets/screens/meeting-light.webp" alt="A meeting: the agenda, the minutes, and the tasks that came out of it">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/meeting-dark.webp">
+  <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/meeting-light.webp" alt="A meeting: the agenda, the minutes, and the tasks that came out of it">
 </picture>
 
 A meeting has an agenda before it and minutes after it. Tasks come out of the minutes with a person and a date attached, and once the minutes are confirmed they stop changing.
@@ -58,8 +58,8 @@ A meeting has an agenda before it and minutes after it. Tasks come out of the mi
 ### Hand it over
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/screens/handover-dark.webp">
-  <img src="assets/screens/handover-light.webp" alt="A handover: the accounts, files and equipment the outgoing committee passes on, each one checked">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/handover-dark.webp">
+  <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/screens/handover-light.webp" alt="A handover: the accounts, files and equipment the outgoing committee passes on, each one checked">
 </picture>
 
 Most clubs lose something every year: the Instagram password, the shared drive, the projector. A handover lists what the outgoing committee passes on and checks each item off with the person receiving it, so next year starts where this one ended.
@@ -67,8 +67,8 @@ Most clubs lose something every year: the Instagram password, the shared drive, 
 ## How it is built
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/diagram/architecture-dark.svg">
-  <img src="assets/diagram/architecture-light.svg" alt="The web and the phone app call one API, which runs every request as a database role bound by row-level security in Postgres, and reaches email, calendar, files and billing through adapters">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/diagram/architecture-dark.svg">
+  <img src="https://raw.githubusercontent.com/yeegz/WayClub-showcase/main/assets/diagram/architecture-light.svg" alt="The web and the phone app call one API, which runs every request as a database role bound by row-level security in Postgres, and reaches email, calendar, files and billing through adapters">
 </picture>
 
 - **The database enforces tenancy.** Every request runs as a role that row-level security always binds. A forgotten check in the API returns nothing rather than someone else's data, and a read across accounts gets the same 404 as a record that does not exist.
